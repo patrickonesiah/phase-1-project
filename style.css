@@ -4,17 +4,16 @@ body{
     font-family: "Jost", sans-serif;;
     font-size: 1rem;
     height: 100vh;
+    background-color: #E3E8F2;
 }
 #pokemonList {
     display: flex;
     padding: 20px;
     gap: 25px;
-    color: red;
     flex-wrap: wrap;
 }
 
 .pokemonLi {
-    color: red;
     text-align: center;
 }
 
@@ -24,13 +23,13 @@ ul {
 
 li{
     width:350px;
-    height:500px;
-    background-color: blue;
+    height:650px;
+    background-color: rgb(255, 255, 255);
     border-radius: 15px;
 }
 
 img{
-    max-width: 80%;
+    max-width: 100%;
 }
 
 h1 {
@@ -42,4 +41,43 @@ h1 {
 
 section {
     width: 100%;
+}
+
+.pokemonName{
+    font-weight:900;
+    font-size: 2em;
+}
+.pokemonId{
+    margin-top: 50px;
+    font-weight:800;
+    font-size: 1.5em;
+}
+.learnMoreButton{
+    font-weight:500;
+    background-color: #04AA6D;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 50px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#nextButton{
+    font-weight:500;
+    background-color: #04AA6D;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 50px;
+    cursor: pointer;
+    border-radius: 5px;
 }
