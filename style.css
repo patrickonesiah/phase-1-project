@@ -29,7 +29,8 @@ li{
 }
 
 img{
-    max-width: 100%;
+    max-width: 70%;
+    max-height: 150px;
 }
 
 h1 {
@@ -46,23 +47,24 @@ section {
 .pokemonName{
     font-weight:900;
     font-size: 2em;
+    margin: 20px;
 }
 .pokemonId{
-    margin-top: 50px;
-    font-weight:800;
+    margin: 50px;
+    font-weight:500;
     font-size: 1.5em;
 }
 .learnMoreButton{
     font-weight:500;
-    background-color: #04AA6D;
+    background-color: #ffffff;
     border: none;
-    color: white;
+    color: rgb(0, 0, 0);
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin-top: 50px;
+    margin-top: 150px;
     cursor: pointer;
     border-radius: 5px;
 }

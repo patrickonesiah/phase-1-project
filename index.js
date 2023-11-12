@@ -4,8 +4,6 @@ const dummyUrl2 = 'https://dummyapi.io/data/v1/'
 
 let currentIndex = 5
 
-//https://img.pokemondb.net/artwork/large/bulbasaur.jpg
-
 async function fetchPokemons() {
     const response = await fetch(pokeUrl)
 
@@ -49,12 +47,13 @@ async function displayOnePokemon(pokemon){
 
     console.log(pokemonDetails.sprites.front_default)
 
-    pokemonImg.src = pokemonDetails.sprites.other.home.front_default
-    
+    pokemonImg.src = `https://img.pokemondb.net/artwork/large/${pokemonDetails.name}.jpg`
+    //pokemonDetails.sprites.other.home.front_default
+    //https://img.pokemondb.net/artwork/large/bulbasaur.jpg
     pokemonName.innerText = pokemonDetails.name
     pokemonName.className = 'pokemonName'
 
-    pokemonNumber.innerText = pokemonDetails.id
+    pokemonNumber.innerText = `000${pokemonDetails.id}`
     pokemonNumber.className = 'pokemonId'
 
     learnMoreButton.type = 'button'
