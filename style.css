@@ -1,0 +1,45 @@
+body{
+    margin:0;
+    padding:0;
+    font-family: "Jost", sans-serif;;
+    font-size: 1rem;
+    height: 100vh;
+}
+#pokemonList {
+    display: flex;
+    padding: 20px;
+    gap: 25px;
+    color: red;
+    flex-wrap: wrap;
+}
+
+.pokemonLi {
+    color: red;
+    text-align: center;
+}
+
+ul {
+    list-style-type: none;
+}
+
+li{
+    width:350px;
+    height:500px;
+    background-color: blue;
+    border-radius: 15px;
+}
+
+img{
+    max-width: 80%;
+}
+
+h1 {
+    font-size: 5em;
+    text-align: center;
+    margin:0;
+    padding: 0;
+}
+
+section {
+    width: 100%;
+}
