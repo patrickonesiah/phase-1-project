@@ -1,3 +1,5 @@
+
+
 const url = 'http://localhost:3000/dogs'
 const pokeUrl = 'https://pokeapi.co/api/v2/pokemon?limit=5'
 const dummyUrl2 = 'https://dummyapi.io/data/v1/'
@@ -44,27 +46,47 @@ async function displayOnePokemon(pokemon){
     const pokemonNumber = document.createElement('div')
     const learnMoreButton = document.createElement('input')
     const pokemonRow = document.createElement('li')
+    const flipBox = document.createElement('div')
+    const flipBoxInner = document.createElement('div')
+    const flipBoxFront = document.createElement('div')
+    const flipBoxBack = document.createElement('div')
 
-    console.log(pokemonDetails.sprites.front_default)
+    flipBox.className = "flip-box"
+    flipBoxInner.className = "flip-box-inner"
+    flipBoxFront.className = "flip-box-front"
+    flipBoxBack.className = "flip-box-back"
+
+    //console.log(pokemonDetails.sprites.front_default)
 
     pokemonImg.src = `https://img.pokemondb.net/artwork/large/${pokemonDetails.name}.jpg`
     //pokemonDetails.sprites.other.home.front_default
     //https://img.pokemondb.net/artwork/large/bulbasaur.jpg
-    pokemonName.innerText = pokemonDetails.name
+    pokemonName.innerText = capitalizedStr(pokemonDetails.name)
     pokemonName.className = 'pokemonName'
 
-    pokemonNumber.innerText = `000${pokemonDetails.id}`
+    pokemonNumber.innerText = pokemonDetails.id.toString().padStart(4,'0')
     pokemonNumber.className = 'pokemonId'
 
     learnMoreButton.type = 'button'
     learnMoreButton.className = 'learnMoreButton'
     learnMoreButton.value = 'Learn More'
 
-    pokemonRow.className = 'pokemonLi'
-    pokemonRow.appendChild(pokemonNumber)
-    pokemonRow.appendChild(pokemonImg)
-    pokemonRow.appendChild(pokemonName)
-    pokemonRow.appendChild(learnMoreButton)
+    flipBox.appendChild(flipBoxInner)
+    flipBoxInner.appendChild(flipBoxFront)
+    flipBoxInner.appendChild(flipBoxBack)
+
+
+    flipBoxBack.appendChild(pokemonNumber)
+    flipBoxBack.appendChild(pokemonImg)
+    flipBoxBack.appendChild(pokemonName)
+    flipBoxBack.appendChild(learnMoreButton)
+
+    flipBoxFront.appendChild(pokemonNumber)
+    flipBoxFront.appendChild(pokemonImg)
+    flipBoxFront.appendChild(pokemonName)
+    flipBoxFront.appendChild(learnMoreButton)
+    
+    pokemonRow.appendChild(flipBox)
     listContainer.appendChild(pokemonRow)
 }
 
