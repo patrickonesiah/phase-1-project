@@ -1,20 +1,21 @@
-
-
 const url = 'http://localhost:3000/dogs'
-const pokeUrl = 'https://pokeapi.co/api/v2/pokemon?limit=5'
+const pokeUrl = 'https://pokeapi.co/api/v2/pokemon?limit=2'
 const dummyUrl2 = 'https://dummyapi.io/data/v1/'
 
 let currentIndex = 5
+
+const pokemonArray_temp = []
 
 async function fetchPokemons() {
     const response = await fetch(pokeUrl)
 
     const pokemonArray = await response.json()
-
+    
     pokemonArray.results.forEach((pokemon) => {
+        pokemonArray_temp.push(pokemon)
         displayOnePokemon(pokemon)
     })
-
+    console.log(pokemonArray_temp)
     displayNextPokemons()
 
 }
@@ -37,10 +38,14 @@ function displayNextPokemons(){
 
 async function displayOnePokemon(pokemon){
     const fetchIndividualPokemon = await fetch(pokemon.url)
-    const pokemonDetails = await fetchIndividualPokemon.json()
+    const pokemonInfo = await fetchIndividualPokemon.json()
 
+    const returnValueOfFlipBoxBack = displayFront(pokemonInfo)
+    displayBack(pokemonInfo,returnValueOfFlipBoxBack)
+}
+
+function displayFront(pokemonInfo){
     const listContainer = document.querySelector('#pokemonList')
-
     const pokemonImg = document.createElement('img')
     const pokemonName = document.createElement('div')
     const pokemonNumber = document.createElement('div')
@@ -53,18 +58,18 @@ async function displayOnePokemon(pokemon){
 
     flipBox.className = "flip-box"
     flipBoxInner.className = "flip-box-inner"
-    flipBoxFront.className = "flip-box-front"
-    flipBoxBack.className = "flip-box-back"
+    flipBoxBack.className = "flip-box-front"
+    flipBoxFront.className = "flip-box-back"
 
-    //console.log(pokemonDetails.sprites.front_default)
+    //console.log(pokemonInfo.sprites.front_default)
 
-    pokemonImg.src = `https://img.pokemondb.net/artwork/large/${pokemonDetails.name}.jpg`
-    //pokemonDetails.sprites.other.home.front_default
+    pokemonImg.src = `https://img.pokemondb.net/artwork/large/${pokemonInfo.name}.jpg`
+    //pokemonInfo.sprites.other.home.front_default
     //https://img.pokemondb.net/artwork/large/bulbasaur.jpg
-    pokemonName.innerText = capitalizedStr(pokemonDetails.name)
+    pokemonName.innerText = capitalizedStr(pokemonInfo.name)
     pokemonName.className = 'pokemonName'
 
-    pokemonNumber.innerText = pokemonDetails.id.toString().padStart(4,'0')
+    pokemonNumber.innerText = pokemonInfo.id.toString().padStart(4,'0')
     pokemonNumber.className = 'pokemonId'
 
     learnMoreButton.type = 'button'
@@ -75,12 +80,6 @@ async function displayOnePokemon(pokemon){
     flipBoxInner.appendChild(flipBoxFront)
     flipBoxInner.appendChild(flipBoxBack)
 
-
-    flipBoxBack.appendChild(pokemonNumber)
-    flipBoxBack.appendChild(pokemonImg)
-    flipBoxBack.appendChild(pokemonName)
-    flipBoxBack.appendChild(learnMoreButton)
-
     flipBoxFront.appendChild(pokemonNumber)
     flipBoxFront.appendChild(pokemonImg)
     flipBoxFront.appendChild(pokemonName)
@@ -88,6 +87,58 @@ async function displayOnePokemon(pokemon){
     
     pokemonRow.appendChild(flipBox)
     listContainer.appendChild(pokemonRow)
+
+    return flipBoxBack
+}
+
+function displayBack(pokemonInfo, returnValueOfFlipBoxBack){
+
+//     <div class="container-grid-1">
+//     <div class="item-grid-1 backPokemonNameFontStyle">Crabominable</div>
+//     <div class="item-grid-1 backPokemonIdFontStyle">0001</div>
+//     <div class="item-grid-1"><img
+//             src="https://img.pokemondb.net/artwork/large/bulbasaur.jpg"></div>
+// </div>
+
+    const div_container_grid_1 = document.createElement('div')
+    const div_backPokemonName = document.createElement('div')
+    const div_backPokemonId = document.createElement('div')
+    const div_backPokemonImg = document.createElement('img')
+
+    div_container_grid_1.className = 'container-grid-1'
+    div_backPokemonName.classList.add('item-grid-1','backPokemonNameFontStyle')
+    div_backPokemonName.innerText = capitalizedStr(pokemonInfo.name)
+    div_backPokemonId.classList.add('item-grid-1','backPokemonIdFontStyle')
+    div_backPokemonId.innerText = pokemonInfo.id.toString().padStart(4,'0')
+    div_backPokemonImg.classList.add('item-grid-1','gridColumn_1_3')
+    div_backPokemonImg.src = `https://img.pokemondb.net/artwork/large/${pokemonInfo.name}.jpg`
+    
+    div_container_grid_1.appendChild(div_backPokemonName)
+    div_container_grid_1.appendChild(div_backPokemonId)
+    div_container_grid_1.appendChild(div_backPokemonImg)
+    console.log('flipBoxBack: ', returnValueOfFlipBoxBack)
+    returnValueOfFlipBoxBack.appendChild(div_container_grid_1)
+    
+    
+    // console.log(pokemonInfo)
+
+    // console.log(pokemonInfo.name) 
+    // console.log(pokemonInfo.id)
+
+    console.log(pokemonInfo.species)
+    console.log(pokemonInfo.weight)
+    pokemonInfo.abilities.forEach((abilityLabel)=>{
+        console.log(abilityLabel.ability.name)
+    })
+
+    pokemonInfo.stats.forEach((statLabel)=>{
+        console.log(statLabel.stat.name, statLabel.base_stat)
+    })
+
+    pokemonInfo.types.forEach((typeLabel)=>{
+        console.log(`typeLabel.type.name: ${typeLabel.type.name}`)
+    })
+
 }
 
 fetchPokemons();

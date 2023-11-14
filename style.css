@@ -136,16 +136,7 @@ section {
     margin-top: 10px;
     padding: 0px 20px;
 }
-.container-grid-3 {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    margin-top: 20px;
-    padding: 0px 20px;
-}
 
-.item-grid-3-col-1-7 {
-    grid-column: 1 / 7;
-}
 .item-grid-2-col-1-5 {
     grid-column: 1 / 5;
 }
@@ -161,6 +152,10 @@ section {
 }
 
 .item-grid-1:nth-of-type(3) {
+    grid-column: 1 / 3;
+}
+.gridColumn_1_3 {
+    justify-self: center;
     grid-column: 1 / 3;
 }
 .item-grid-1:nth-of-type(2) {
@@ -187,7 +182,7 @@ section {
 
 .vertical {
     border-left: 35px solid rgb(214, 214, 214);
-    height: 120px;
+    height: 100px;
     justify-self: center;
 }
 .vertical-hp {
@@ -201,6 +196,29 @@ section {
     justify-self: center;
 }
 
+.chart {
+    max-width: 800px;
+    height: 120px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 18px;
+    padding: 0px 20px;
+  }
+
+.bar{
+    display: flex;
+    flex-direction: column;
+    height: var(--bar-height, 100%);
+    flex: 0 0 37px;
+}
+
+.section {
+    display: flex;
+    flex-grow: var(--section-value, 1);
+    background-color: rgb(198, 198, 198);
+  }
+
 .pillShape {
     padding: 2px 15px;
     border-radius: 50px;
@@ -213,3 +231,23 @@ section {
 .iceColor {
     background-color: rgb(6, 100, 167)
 }
+
+.hpColor {
+    background-color: #FF5959;
+}
+.attkColor {
+    background-color: #F5AC78;
+}
+.defColor {
+    background-color: #FAE078;
+}
+.spAttkColor {
+    background-color: #9DB7F5;
+}
+.spDefColor {
+    background-color: #A7DB8D;
+}    
+.speedColor {
+    background-color: #FA92B2;
+}
+
