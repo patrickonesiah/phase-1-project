@@ -117,13 +117,44 @@ function displayBack(pokemonInfo, returnValueOfFlipBoxBack){
     div_container_grid_1.appendChild(div_backPokemonId)
     div_container_grid_1.appendChild(div_backPokemonImg)
     console.log('flipBoxBack: ', returnValueOfFlipBoxBack)
-    returnValueOfFlipBoxBack.appendChild(div_container_grid_1)
     
+    
+
+    const div_container_grid_2 = document.createElement('div')
+    const div_types= document.createElement('div')
+    const grid_2_col_1_5 = "item-grid-2-col-1-5"
+
+    div_container_grid_2.className = "container-grid-2"
+    div_types.className = grid_2_col_1_5
+
+
+    pokemonInfo.types.forEach((typesLabel)=>{
+        console.log(typesLabel.type.name)
+        const span_types= document.createElement('span')
+        span_types.classList.add('pillShape', 'fightingColor')
+        span_types.innerText = typesLabel.type.name
+        div_types.appendChild(span_types)
+    })
+    div_container_grid_2.appendChild(div_types)
+
+    returnValueOfFlipBoxBack.appendChild(div_container_grid_1)
+    returnValueOfFlipBoxBack.appendChild(div_container_grid_2)
+
+
+
+    // div_container_grid_2.innerHTML = 
+    // `<div class="${grid_2_col_1_5}">
+    //     <span class="pillShape fightingColor"></span>
+    //     <span class="pillShape iceColor"></span>
+    // </div>`
+
     
     // console.log(pokemonInfo)
 
     // console.log(pokemonInfo.name) 
     // console.log(pokemonInfo.id)
+
+
 
     console.log(pokemonInfo.species)
     console.log(pokemonInfo.weight)
