@@ -18,24 +18,36 @@ async function fetchPokemons() {
         displayOnePokemon(pokemon)
     })
 
-    displayNextPokemons()
+    interactiveButtons()
 
 }
 // /'https://pokeapi.co/api/v2/pokemon?limit=5&offset=10/'
-function displayNextPokemons() {
-    listContainer.innerHTML = ""
+function interactiveButtons() {
 
-    // const nextButton = document.querySelector('#nextButton')
 
-    // nextButton.addEventListener('click', async () => {
-    //     const fetchIndividualPokemon = await fetch(`${pokeUrl}&offset=${currentIndex}`)
-    //     const pokemonArray = await fetchIndividualPokemon.json()
+    const nextButton = document.querySelector('#nextButton')
+    const frontBackButton = document.querySelector('#frontBackButton')
 
-    //     pokemonArray.results.forEach((pokemon) => {
-    //         displayOnePokemon(pokemon)
-    //     })
-    //     currentIndex += 5
-    // })
+    document.addEventListener('keyup', event => {
+        if(event.code === 'Space'){
+            console.log('Space pressed')
+            const cards = document.querySelectorAll('.flip-box-inner')
+            cards.forEach(card => {
+                console.log(card)
+                card.classList.toggle("is-flipped")
+            });
+        }
+    })
+    nextButton.addEventListener('click', async () => {
+        listContainer.innerHTML = ""
+        const fetchIndividualPokemon = await fetch(`${pokeUrl}&offset=${currentIndex}`)
+        const pokemonArray = await fetchIndividualPokemon.json()
+
+        pokemonArray.results.forEach((pokemon) => {
+            displayOnePokemon(pokemon)
+        })
+        currentIndex += 5
+    })
 
 
 }
@@ -82,8 +94,8 @@ function displayFront(pokemonInfo) {
 
     flipBox.className = "flip-box"
     flipBoxInner.className = "flip-box-inner"
-    flipBoxBack.className = "flip-box-front"
-    flipBoxFront.className = "flip-box-back"
+    flipBoxBack.className = "flip-box-back"
+    flipBoxFront.className = "flip-box-front"
 
     //console.log(pokemonInfo.sprites.front_default)
 
@@ -277,6 +289,7 @@ function displayBack(pokemonInfo, pokemonSpecies, returnValueOfFlipBoxBack) {
     returnValueOfFlipBoxBack.appendChild(div_container_grid_1)
     returnValueOfFlipBoxBack.appendChild(div_container_grid_2)
     returnValueOfFlipBoxBack.appendChild(div_container_grid_3)
+
 
     // pokemonInfo.types.forEach((typeLabel) => {
     //     console.log(`typeLabel.type.name: ${typeLabel.type.name}`)
