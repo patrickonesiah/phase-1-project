@@ -3,9 +3,7 @@ const pokeUrl = 'https://pokeapi.co/api/v2/pokemon?limit=5'
 const dummyUrl2 = 'https://dummyapi.io/data/v1/'
 
 const listContainer = document.querySelector('#pokemonList')
-console.log(listContainer)
 let currentIndex = 5
-
 const pokemonArray_temp = []
 
 async function fetchPokemons() {
@@ -23,11 +21,6 @@ async function fetchPokemons() {
 }
 // /'https://pokeapi.co/api/v2/pokemon?limit=5&offset=10/'
 function interactiveButtons() {
-
-
-    const nextButton = document.querySelector('#nextButton')
-    const frontBackButton = document.querySelector('#frontBackButton')
-
     document.addEventListener('keyup', event => {
         if(event.code === 'Space'){
             console.log('Space pressed')
@@ -38,6 +31,8 @@ function interactiveButtons() {
             });
         }
     })
+
+    const nextButton = document.querySelector('#nextButton')
     nextButton.addEventListener('click', async () => {
         listContainer.innerHTML = ""
         const fetchIndividualPokemon = await fetch(`${pokeUrl}&offset=${currentIndex}`)
@@ -48,23 +43,6 @@ function interactiveButtons() {
         })
         currentIndex += 5
     })
-
-
-}
-function displayPokemons() {
-    const nextButton = document.querySelector('#nextButton')
-
-    nextButton.addEventListener('click', async () => {
-        const fetchIndividualPokemon = await fetch(`${pokeUrl}&offset=${currentIndex}`)
-        const pokemonArray = await fetchIndividualPokemon.json()
-
-        pokemonArray.results.forEach((pokemon) => {
-            displayOnePokemon(pokemon)
-        })
-        currentIndex += 5
-    })
-
-
 }
 
 async function displayOnePokemon(pokemon) {
@@ -76,8 +54,8 @@ async function displayOnePokemon(pokemon) {
     const fetchPokemonSpecies = await fetch(pokemonSpeciesUrl)
     const pokemonSpecies = await fetchPokemonSpecies.json()
 
-    const returnValueOfFlipBoxBack = displayFront(pokemonInfo)
-    displayBack(pokemonInfo, pokemonSpecies, returnValueOfFlipBoxBack)
+    const flipBoxBack = displayFront(pokemonInfo)
+    displayBack(pokemonInfo, pokemonSpecies, flipBoxBack)
 }
 
 function displayFront(pokemonInfo) {
@@ -127,43 +105,40 @@ function displayFront(pokemonInfo) {
     return flipBoxBack
 }
 
-function displayBack(pokemonInfo, pokemonSpecies, returnValueOfFlipBoxBack) {
+function displayBack(pokemonInfo, pokemonSpecies, flipBoxBack) {
 
     const div_container_grid_1 = document.createElement('div')
     const pokemonId = pokemonInfo.id.toString().padStart(4, '0')
     const pokemonImg = `https://img.pokemondb.net/artwork/large/${pokemonInfo.name}.jpg`
 
     div_container_grid_1.innerHTML =
-    `
-    <div class="container-grid-1">
+    `<div class="container-grid-1">
         <div class="item-grid-1 backPokemonNameFontStyle">${capitalizedStr(pokemonInfo.name)}</div>
         <div class="item-grid-1 backPokemonIdFontStyle">${pokemonId}</div>
         <div class="item-grid-1"><img src="${pokemonImg}"></div>
-    </div>
-    `
-    const div_container_grid_2 = document.createElement('div')
-    const typeColorObject = 
-        {
+    </div>`
 
-            normal:     '#A8A878',
-            fire:       '#F08030',
-            fighting:   '#C03028',
-            water:      '#6890F0',
-            grass:      '#78C850',
-            electric:   '#F8D030',
-            ice:        '#98D8D8',
-            poison:     '#A040A0',
-            ground:     '#E0C068',
-            flying:     '#A890F0',
-            psychic:    '#F85888',
-            bug:        '#A8B820',
-            rock:       '#B8A038',
-            ghost:      '#705898',
-            dark:       '#705848',
-            dragon:     '#7038F8',
-            steel:      '#B8B8D0',
-            fairy:      '#EE99AC'      
-        }
+    const div_container_grid_2 = document.createElement('div')
+    const typeColorObject = {
+        normal:     '#A8A878',
+        fire:       '#F08030',
+        fighting:   '#C03028',
+        water:      '#6890F0',
+        grass:      '#78C850',
+        electric:   '#F8D030',
+        ice:        '#98D8D8',
+        poison:     '#A040A0',
+        ground:     '#E0C068',
+        flying:     '#A890F0',
+        psychic:    '#F85888',
+        bug:        '#A8B820',
+        rock:       '#B8A038',
+        ghost:      '#705898',
+        dark:       '#705848',
+        dragon:     '#7038F8',
+        steel:      '#B8B8D0',
+        fairy:      '#EE99AC'      
+    }
 
     let typeHTML, abilityHTML = ``
 
@@ -184,8 +159,7 @@ function displayBack(pokemonInfo, pokemonSpecies, returnValueOfFlipBoxBack) {
     })
 
     div_container_grid_2.innerHTML =
-        `
-        <div class="container-grid-2">
+        `<div class="container-grid-2">
             <div class="item-grid-2-col-1-5">
                 ${typeHTML}
             </div>
@@ -200,26 +174,11 @@ function displayBack(pokemonInfo, pokemonSpecies, returnValueOfFlipBoxBack) {
 
             <div class="item-grid-2-col-1-5 backSubHeaderFontStyle">Base Stats</div>
             <hr class="item-grid-2-col-1-5 horizontal">
-        </div>
-        `
+        </div>`
 
         const div_container_grid_3 = document.createElement('div')
-
-        // const statsPercentage = {
-        //     hp: 0,
-        //     att: 0,
-        //     def: 0,
-        //     satt: 0,
-        //     sdef: 0,
-        //     spd: 0,
-        //     hpEmpty: 0,
-        //     attEmpty: 0,
-        //     defEmpty: 0,
-        //     sattEmpty: 0,
-        //     sdefEmpty: 0,
-        //     spdEmpty: 0,
-        // }
         const statsObject = {}
+
         pokemonInfo.stats.forEach((statLabel) => {
             let statNameArray = statLabel.stat.name.split('-')
 
@@ -234,22 +193,9 @@ function displayBack(pokemonInfo, pokemonSpecies, returnValueOfFlipBoxBack) {
             statsObject[statNameArray].top = Math.round((255-statLabel.base_stat)/255*100)
             statsObject[statNameArray].bottom = Math.round(statLabel.base_stat/255*100)
         })
-        // const statsPercentage = pokemonInfo.stats.map((statLabel) => {
-        //     // console.log(statLabel.stat.name, statLabel.base_stat)
-        //     const statsPercentage = {}
-        //     const newStatLabel = statLabel.stat.name.split('-').join('')
-        //     statsPercentage[newStatLabel] = Math.round(statLabel.base_stat/255*100)
-        //     statsPercentage[`${newStatLabel}_topHalfOfBar`] = Math.round((255-statLabel.base_stat)/255*100)
 
-        //     return statsPercentage
-        // })
-
-
-        div_container_grid_3.innerHTML = `
-        <div class="container-grid-2">
-
-        </div>    
-         <div>   
+        div_container_grid_3.innerHTML = 
+        `<div>   
             <div class="chart">
                 <div class="bar" style="--bar-ratio: 100%;">
                     <div class="section" style="--section-value: ${statsObject.hp.top};" data-value="20"></div>
@@ -282,19 +228,14 @@ function displayBack(pokemonInfo, pokemonSpecies, returnValueOfFlipBoxBack) {
                     <div class="label">Spd</div>
                 </div>
             </div>
-        </div>            
-        
-        `
+        </div>`
 
-    returnValueOfFlipBoxBack.appendChild(div_container_grid_1)
-    returnValueOfFlipBoxBack.appendChild(div_container_grid_2)
-    returnValueOfFlipBoxBack.appendChild(div_container_grid_3)
-
-
+        flipBoxBack.appendChild(div_container_grid_1)
+        flipBoxBack.appendChild(div_container_grid_2)
+        flipBoxBack.appendChild(div_container_grid_3)
     // pokemonInfo.types.forEach((typeLabel) => {
     //     console.log(`typeLabel.type.name: ${typeLabel.type.name}`)
     // })
-
 }
 
 fetchPokemons();
