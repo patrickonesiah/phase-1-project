@@ -54,55 +54,41 @@ async function displayOnePokemon(pokemon) {
     const fetchPokemonSpecies = await fetch(pokemonSpeciesUrl)
     const pokemonSpecies = await fetchPokemonSpecies.json()
 
-    const flipBoxBack = displayFront(pokemonInfo)
-    displayBack(pokemonInfo, pokemonSpecies, flipBoxBack)
-}
-
-function displayFront(pokemonInfo) {
-
-    const pokemonImg = document.createElement('img')
-    const pokemonName = document.createElement('div')
-    const pokemonNumber = document.createElement('div')
-    const learnMoreButton = document.createElement('input')
-    const pokemonRow = document.createElement('li')
     const flipBox = document.createElement('div')
     const flipBoxInner = document.createElement('div')
     const flipBoxFront = document.createElement('div')
     const flipBoxBack = document.createElement('div')
+    const li = document.createElement('li')
 
     flipBox.className = "flip-box"
     flipBoxInner.className = "flip-box-inner"
     flipBoxBack.className = "flip-box-back"
     flipBoxFront.className = "flip-box-front"
 
-    //console.log(pokemonInfo.sprites.front_default)
+    flipBox.append(flipBoxInner)
+    flipBoxInner.append(flipBoxFront, flipBoxBack)
 
-    pokemonImg.src = `https://img.pokemondb.net/artwork/large/${pokemonInfo.name}.jpg`
-    //pokemonInfo.sprites.other.home.front_default
-    //https://img.pokemondb.net/artwork/large/bulbasaur.jpg
-    pokemonName.innerText = capitalizedStr(pokemonInfo.name)
-    pokemonName.className = 'pokemonName'
+    li.append(flipBox)
+    listContainer.append(li)
+    displayFront(pokemonInfo, flipBoxFront)
 
-    pokemonNumber.innerText = pokemonInfo.id.toString().padStart(4, '0')
-    pokemonNumber.className = 'pokemonId'
 
-    learnMoreButton.type = 'button'
-    learnMoreButton.className = 'learnMoreButton'
-    learnMoreButton.value = 'Learn More'
+    displayBack(pokemonInfo, pokemonSpecies, flipBoxBack)
+}
 
-    flipBox.appendChild(flipBoxInner)
-    flipBoxInner.appendChild(flipBoxFront)
-    flipBoxInner.appendChild(flipBoxBack)
+function displayFront(pokemonInfo, flipBoxFront) {
 
-    flipBoxFront.appendChild(pokemonNumber)
-    flipBoxFront.appendChild(pokemonImg)
-    flipBoxFront.appendChild(pokemonName)
-    flipBoxFront.appendChild(learnMoreButton)
+    const pokemonImgSrc = `https://img.pokemondb.net/artwork/large/${pokemonInfo.name}.jpg`
+    const pokemonName = capitalizedStr(pokemonInfo.name)
+    const pokemonNumber = pokemonInfo.id.toString().padStart(4, '0')
 
-    pokemonRow.appendChild(flipBox)
-    listContainer.appendChild(pokemonRow)
-
-    return flipBoxBack
+    flipBoxFront.innerHTML = 
+    `
+        <div class="pokemonId">${pokemonNumber}</div>
+        <img src="${pokemonImgSrc}">
+        <div class="pokemonName">${pokemonName}</div>
+        <input type="button" class="learnMoreButton" value="Learn More">
+    `
 }
 
 function displayBack(pokemonInfo, pokemonSpecies, flipBoxBack) {
