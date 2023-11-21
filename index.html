@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script src="./utility.js" defer></script>
-    <script src="./index.js" defer></script>
+    <!-- <script src="./index.js" defer></script> -->
+    <script src="./fetchPokemon.js" defer></script>
 
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jost">
@@ -20,93 +21,107 @@
             <h1>Pokemon</h1>
         </hgroup>
     </header>
-    <section>
+    <section id="pokemonListSection">
 
-        <ul id="pokemonList">
-            <!--li>
-                < <div class="flip-box">
-                    <div class="flip-box-inner">
-                        <div class="flip-box-front">
-                            <div class="container-grid-1">
-                                <div class="item-grid-1 backPokemonNameFontStyle">Crabominable</div>
-                                <div class="item-grid-1 backPokemonIdFontStyle">0001</div>
-                                <div class="item-grid-1"><img
-                                        src="https://img.pokemondb.net/artwork/large/bulbasaur.jpg"></div>
-                            </div>
+        <ul id="pokemonList"></ul>
+        <div>
+            <input type="button" id="nextButton" class="buttonStyle" value="Next">
+            <input type="button" id="prevButton" class="buttonStyle" value="Prev">
+            <input type="button" id="frontBackButton" class="buttonStyle" value="Front / Back">
+        </div>
+    </section>
+
+    <header>
+        <hgroup>
+            <h1>Pokemon Search</h1>
+        </hgroup>
+    </header>
+    <section id="searchForPokemon">
+        <form id="formSearchPokemon" action="">
+            <div class="inputgroup">
+                <span class="innericon searchicon"><img class="searchIcon" src="img/searchIcon.png"
+                        alt="Search Icon"></span>
+                <input type="text" id="searchPokemonName" name="searchPokemonName" value="Search">
+            </div>
+        </form>
+
+        <div id="wrapperSearchedPokemon">
+            <ul id="recomendationList"></ul>
 
 
-                            <div class="container-grid-2">
-                                <div class="item-grid-2-col-1-5">
-                                    <span class="pillShape fightingColor">Fighting</span>
-                                    <span class="pillShape iceColor">Ice</span>
-                                </div>
-
-                                <div class="item-grid-2-col-1-5 backSubHeaderFontStyle">About</div>
-                                <hr class="item-grid-2-col-1-5 horizontal">
-
-
-                                <div class="item-grid-2-col-2-3 backListFontStyle">Species</div>
-                                <div class="item-grid-2-col-3-5">Seed</div>
-
-                                <div class="item-grid-2-col-2-3 backListFontStyle">Weight</div>
-                                <div class="item-grid-2-col-3-5">180kg</div>
-
-                                <div class="item-grid-2-col-2-3 backListFontStyle">Abilities</div>
-                                <div class="item-grid-2-col-3-5">Hyper Cutter or Iron Fist,</div>
-                                <div class="item-grid-2-col-3-5">Anger Point</div>
-                            </div>
-                            <div class="container-grid-3">
-                                <div class="item-grid-3-col-1-7 backSubHeaderFontStyle">Base Stats</div>
-                                <hr class="item-grid-3-col-1-7 horizontal">
-                            </div>
-                            <div class="chart">
-                                <div class="bar" style="--bar-ratio: 100%;">
-                                    <div class="section" style="--section-value: 50;" data-value="20"></div>
-                                    <div class="section hpColor" style="--section-value: 50;" data-value="50"></div>
-                                    <div class="label">HP</div>
-                                </div>
-                                <div class="bar">
-                                    <div class="section" style="--section-value: 50;" data-value="20"></div>
-                                    <div class="section attkColor" style="--section-value: 50;" data-value="50"></div>
-                                    <div class="label">Att</div>
-                                </div>
-                                <div class="bar">
-                                    <div class="section" style="--section-value: 20;" data-value="20"></div>
-                                    <div class="section defColor" style="--section-value: 80;" data-value="50"></div>
-                                    <div class="label">Def</div>
-                                </div>
-                                <div class="bar">
-                                    <div class="section" style="--section-value: 50;" data-value="20"></div>
-                                    <div class="section spAttkColor" style="--section-value: 50;" data-value="50"></div>
-                                    <div class="label">S.Att</div>
-                                </div>
-                                <div class="bar">
-                                    <div class="section" style="--section-value: 50;" data-value="20"></div>
-                                    <div class="section spDefColor" style="--section-value: 50;" data-value="50"></div>
-                                    <div class="label">S.Def</div>
-                                </div>
-                                <div class="bar">
-                                    <div class="section" style="--section-value: 50;" data-value="20"></div>
-                                    <div class="section speedColor" style="--section-value: 50;" data-value="50"></div>
-                                    <div class="label">Spd</div>
-                                </div>
-                            </div>
+            <div class="searchedPokemonContainer">
+                <!-- <div class="pokemonColumns greenColor">
+                    <div class="container-grid-2">
+                        <img class="searchedPokemonImg item-grid-2-col-1-5" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png" alt="Bulbasaur">
+                    </div>
+                </div>
+                <div class="pokemonColumns">
+                    <div class="container-grid-2">
+                        <h2 class="item-grid-2-col-1-5">Bio</h2>
+                        <p class="item-grid-2-col-1-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo, quas quidem sit molestias in, hic eveniet error ullam eos quasi necessitatibus eius ea eum quo dolor fuga deserunt tempore totam!</p>
+                    
+                        <div class="item-grid-2-col-1-2">Genus:</div>
+                        <div class="item-grid-2-col-2-4">Seed Pokemon</div>
+                        <div class="item-grid-2-col-1-2">Height:</div>
+                        <div class="item-grid-2-col-2-4">173cm</div>
+                        <div class="item-grid-2-col-1-2">Weight:</div>
+                        <div class="item-grid-2-col-2-4">69kg</div>
+                        <div class="item-grid-2-col-1-2">Abilities:</div>
+                        <div class="item-grid-2-col-2-4">Overgrow, Chlorophyll</div>
+                        
+                        <h2 class="item-grid-2-col-1-5">Training</h2>
+                        <div class="item-grid-2-col-1-2">Base Exp:</div>
+                        <div class="item-grid-2-col-2-4">221</div>
+                        <div class="item-grid-2-col-1-2">Base Happiness:</div>
+                        <div class="item-grid-2-col-2-4">70</div>
+                        <div class="item-grid-2-col-1-2">Catch Rate:</div>
+                        <div class="item-grid-2-col-2-4">70 (17.6%)</div>
+                        <div class="item-grid-2-col-1-2">Growth Rate:</div>
+                        <div class="item-grid-2-col-2-4">medium-slow</div>
+                    </div>
+                </div>
+                <div class="pokemonColumns">
+                    <h2>Evolution</h2>
+                    <div class="container-grid-2">
+                        <div class="item-grid-2-col-1-2"><img class="roundedImage" src="https://www.w3schools.com/howto/img_avatar.png" alt=""></div>
+                        <div class="item-grid-2-col-2-3"><img class="roundedImage" src="https://www.w3schools.com/howto/img_avatar.png" alt=""></div>
+                        <div class="item-grid-2-col-3-4"><img class="roundedImage" src="https://www.w3schools.com/howto/img_avatar.png" alt=""></div>
+                    </div>
+                    <h2>Stats</h2>
+                    <div class="chart">
+                        <div class="bar" style="--bar-ratio: 100%;">
+                            <div class="section" style="--section-value: 82;" data-value="20"></div>
+                            <div class="section hpColor" style="--section-value: 18;" data-value="50"></div>
+                            <div class="label">HP</div>
                         </div>
-                        <div class="flip-box-back">
-                            <div class="pokemonId">0001</div>
-                            <img src="https://img.pokemondb.net/artwork/large/bulbasaur.jpg">
-                            <div class="pokemonName">Bulbasaur</div>
-                            <input type="button" class="learnMoreButton" value="Learn More">
+                        <div class="bar">
+                            <div class="section" style="--section-value: 81;" data-value="20"></div>
+                            <div class="section attkColor" style="--section-value: 19;" data-value="50"></div>
+                            <div class="label">Att</div>
+                        </div>
+                        <div class="bar">
+                            <div class="section" style="--section-value: 81;" data-value="20"></div>
+                            <div class="section defColor" style="--section-value: 19;" data-value="50"></div>
+                            <div class="label">Def</div>
+                        </div>
+                        <div class="bar">
+                            <div class="section" style="--section-value: 75;" data-value="20"></div>
+                            <div class="section spAttkColor" style="--section-value: 25;" data-value="50"></div>
+                            <div class="label">S.Att</div>
+                        </div>
+                        <div class="bar">
+                            <div class="section" style="--section-value: 75;" data-value="20"></div>
+                            <div class="section spDefColor" style="--section-value: 25;" data-value="50"></div>
+                            <div class="label">S.Def</div>
+                        </div>
+                        <div class="bar">
+                            <div class="section" style="--section-value: 82;" data-value="20"></div>
+                            <div class="section speedColor" style="--section-value: 18;" data-value="50"></div>
+                            <div class="label">Spd</div>
                         </div>
                     </div>
-                </div> 
-            </li-->
-        </ul>
-
-
-        <div>
-            <input type="button" id="nextButton" value="Next 5">
-            <input type="button" id="frontBackButton" class="buttonStyle" value="Front / Back">
+                </div> -->
+            </div>
         </div>
     </section>
 
@@ -114,3 +129,5 @@
 </body>
 
 </html>
+
+
