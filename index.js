@@ -24,16 +24,16 @@ async function fetchPokemons() {
 }
 // /'https://pokeapi.co/api/v2/pokemon?limit=5&offset=10/'
 function interactiveButtons() {
-    document.addEventListener('keyup', event => {
-        if (event.code === 'Space') {
-            console.log('Space pressed')
-            const cards = document.querySelectorAll('.flip-box-inner')
-            cards.forEach(card => {
-                console.log(card)
-                card.classList.toggle("is-flipped")
-            });
-        }
-    })
+    // document.addEventListener('click', event => {
+    //     if (event.code === 'Space') {
+    //         console.log('Space pressed')
+    //         const cards = document.querySelectorAll('.flip-box-inner')
+    //         cards.forEach(card => {
+    //             console.log(card)
+    //             card.classList.toggle("is-flipped")
+    //         });
+    //     }
+    // })
 
     const nextButton = document.querySelector('#nextButton')
     nextButton.addEventListener('click', async () => {

@@ -336,7 +336,7 @@ let nextIndex = 0;
 
 function interactiveButtons() {
     document.addEventListener('keyup', event => {
-        if (event.code === 'Space') {
+        if (event.code === 'KeyF') {
             console.log('Space pressed')
             const cards = document.querySelectorAll('.flip-box-inner')
             cards.forEach(card => {
