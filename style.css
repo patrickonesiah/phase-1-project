@@ -15,6 +15,15 @@ body{
     padding: 35px;
     gap: 15px;
     flex-wrap: wrap;
+    justify-content: center;
+}
+
+#pokemonListButtons {
+    display: flex;
+    padding: 35px;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 ul {
@@ -80,6 +89,14 @@ section {
     font-size: 16px;
     cursor: pointer;
     border-radius: 5px;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    appearance: none;
+    background-color: inherit;
+    margin:10px;
 }
 
 .buttonStyle{
@@ -344,7 +361,7 @@ transform: rotateY(180deg);
     flex-wrap: wrap;
 }
 #recomendationList li {
-    background-color: rgb(245, 199, 199);
+    background-color: #d2e1ff;
     margin:5px;
     padding:5px 15px;
     border-radius: 50px;

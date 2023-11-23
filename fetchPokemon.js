@@ -1,4 +1,4 @@
-const pokemonLimit = 1;
+const pokemonLimit = 20;
 const speciesID = 0
 const pokemonDetails = 1
 
@@ -23,7 +23,6 @@ getPokemons();
 const pokemonsEvoArray = []
 
 async function storePokemon(pokemonsEvolutionArray) {
-    //pokemonsArray.results.forEach(async (pokemon)=>{
     for (let i = 0; i < pokemonLimit; i++) {
         const pokemonsEvolutionResp = await fetch(pokemonsEvolutionArray.results[i].url)
         const pokemonEvolution = await pokemonsEvolutionResp.json()
@@ -55,6 +54,7 @@ async function storePokemon(pokemonsEvolutionArray) {
 
         if (pokemonEvolution.chain["evolves_to"][0]) {
             //objectTemp["second"] = pokemonEvolution.chain["evolves_to"][0].species.url
+            const pokemonSecondName = pokemonEvolution.chain["evolves_to"][0].species.name
             objectTemp["second"] = []
 
             const pokemonSecondSpeciesObject = {}
@@ -77,7 +77,7 @@ async function storePokemon(pokemonsEvolutionArray) {
                 name: pokemonSecondSpecies.name
             }
 
-            const pokemonSecondResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonEvolution.chain["evolves_to"][0].species.name}`)
+            const pokemonSecondResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonSecondName}`)
             const pokemonSecond = await pokemonSecondResp.json()
 
             objectTemp["second"].push(pokemonSecondSpeciesObject)
@@ -102,7 +102,7 @@ async function storePokemon(pokemonsEvolutionArray) {
                 pokemonFirstSpeciesObject.second_evolution =
                 {
                     id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url),
-                    name:pokemonThirdSpecies.name
+                    name: pokemonThirdSpecies.name
                 }
                 pokemonSecondSpeciesObject.first_evolution =
                 {
@@ -367,7 +367,7 @@ function interactiveButtons() {
     })
 
     const formSearchPokemon = document.querySelector('#formSearchPokemon')
-    formSearchPokemon.addEventListener('submit', async (event) => {
+    formSearchPokemon.addEventListener('keyup', (event) => {
 
         event.preventDefault()
 
@@ -390,6 +390,7 @@ function interactiveButtons() {
         if (result) {
             displaySearchedPokemon(result)
         } else {
+            console.log("recommendedPokemons", recommendedPokemons)
             recommendedPokemons.forEach((pokemon) => {
                 const li = document.createElement("li")
                 li.innerText = pokemon[1].name
@@ -403,8 +404,39 @@ function interactiveButtons() {
             })
         }
 
-        formSearchPokemon.reset()
+        //formSearchPokemon.reset()
     })
+}
+
+function buttonEvoImages() {
+
+    const roundedImage = document.querySelectorAll('.roundedImage')
+
+    roundedImage.forEach(pokemonImage => {
+        pokemonImage.addEventListener('click', (event) => {
+            // pokemonsEvoArray.forEach((pokemon) => {
+            //     for (const key in pokemon) {
+            //         if (pokemon[key][1].name === event.target.alt) {
+            //            displaySearchedPokemon(pokemon[key])
+            //         }
+            //     }
+            // })
+            let pokemonFound;
+
+            pokemonsEvoArray.find(pokemonEvo => {
+                for (const pokemon in pokemonEvo) {
+                    if (pokemonEvo[pokemon][1].name === event.target.alt) {
+                        pokemonFound = pokemonEvo[pokemon]
+                        return
+                    }
+                }
+            })
+
+            displaySearchedPokemon(pokemonFound)
+        })
+    })
+
+
 }
 
 interactiveButtons()
@@ -487,9 +519,9 @@ async function displaySearchedPokemon(pokemon) {
         <div class="pokemonColumns">
             <h2>Evolution</h2>
             <div class="container-grid-2">
-                <div class="item-grid-2-col-1-2"><img class="roundedImage" src="${pokemonImgBase}" alt="${pokemonBaseName}"></div>
-                <div class="item-grid-2-col-2-3"><img class="roundedImage" src="${pokemonImgSecond}" alt="${pokemonFirstEvoName}"></div>
-                <div class="item-grid-2-col-3-4"><img class="roundedImage" src="${pokemonImgThird}" alt="${pokemonSecondEvoName}"></div>
+                <button class="item-grid-2-col-1-2"><img class="roundedImage" src="${pokemonImgBase}" alt="${pokemonBaseName}"></button>
+                <button class="item-grid-2-col-2-3"><img class="roundedImage" src="${pokemonImgSecond}" alt="${pokemonFirstEvoName}"></button>
+                <button class="item-grid-2-col-3-4"><img class="roundedImage" src="${pokemonImgThird}" alt="${pokemonSecondEvoName}"></button>
             </div>
             <h2>Stats</h2>
             <div class="chart">
@@ -526,6 +558,7 @@ async function displaySearchedPokemon(pokemon) {
             </div>
         </div>`
 
+    buttonEvoImages()
 }
 
 
