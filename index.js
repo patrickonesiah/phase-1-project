@@ -53,8 +53,14 @@ function interactiveButtons() {
         event.preventDefault()
 
         const array = pokemonArray_temp[0].results.filter((pokemon) => pokemon.name.toLowerCase().includes(searchPokemonName.value.toLowerCase()))
-
-        const result = array.find(({ name }) => name === searchPokemonName.value.toLowerCase());
+        console.log("array", array)
+        const result = array.find(({ name }) => {
+            console.log("name:", name)
+            console.log("searchPokemonName.value.toLowerCase():", searchPokemonName.value.toLowerCase())
+            if(name === searchPokemonName.value.toLowerCase()){
+                return true
+            }
+        });
         console.log("result", result)
         const recList = document.querySelector("#recomendationList")
         recList.innerHTML = ""

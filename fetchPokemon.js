@@ -1,69 +1,167 @@
-//Fetch 151 Pokemons
-const pokemonQuantity = 9;
-const pokemons_151 = `https://pokeapi.co/api/v2/pokemon?limit=${pokemonQuantity}&offset=0`
+const pokemonLimit = 1;
+const speciesID = 0
+const pokemonDetails = 1
 
-async function getPokemons(){
+const pokemonsEvolutionUrl = `https://pokeapi.co/api/v2/evolution-chain/?limit=${pokemonLimit}&offset=0`
 
-    const pokemonsResponse = await fetch(pokemons_151)
-    const pokemonsArray = await pokemonsResponse.json()
+async function getPokemons() {
 
-    await storePokemon(pokemonsArray)
-    pokemonsTemp.forEach((e)=>{
-        console.log(e)
-        displayPokemon(e)
-    })
+    const pokemonsEvolutionResponse = await fetch(pokemonsEvolutionUrl)
+    const pokemonsEvolutionArray = await pokemonsEvolutionResponse.json()
 
-    console.log("pokemonsTemp: ", pokemonsTemp)
-    interactiveButtons()
+    await storePokemon(pokemonsEvolutionArray)
+
+    displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
+    displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
+    displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
+
 }
 
 getPokemons();
 
 //Store the Pokemons
-const pokemonsTemp = []
+const pokemonsEvoArray = []
 
-async function storePokemon(pokemonsArray){
+async function storePokemon(pokemonsEvolutionArray) {
     //pokemonsArray.results.forEach(async (pokemon)=>{
-    for(let i = 0; i < pokemonQuantity; i++){
-        const pokemonInfoResp = await fetch(pokemonsArray.results[i].url)
-        const pokemonInfo = await pokemonInfoResp.json()
+    for (let i = 0; i < pokemonLimit; i++) {
+        const pokemonsEvolutionResp = await fetch(pokemonsEvolutionArray.results[i].url)
+        const pokemonEvolution = await pokemonsEvolutionResp.json()
 
-        const pokemonSpeciesResp = await fetch(pokemonInfo.species.url)
-        const pokemonSpecies = await pokemonSpeciesResp.json()
+        const objectTemp = {}
+        objectTemp["first"] = []
 
-        const pokemonEvolutionResp = await fetch(pokemonSpecies.evolution_chain.url)
-        const pokemonEvolution = await pokemonEvolutionResp.json()        
+        const pokemonFirstSpeciesObject = {}
 
-        pokemonInfo.bio = replaceEmDashSymbols(pokemonSpecies.flavor_text_entries[6].flavor_text)
-        pokemonInfo.genus = pokemonSpecies.genera[7].genus
-        pokemonInfo.base_happiness = pokemonSpecies.base_happiness
-        pokemonInfo.capture_rate = pokemonSpecies.capture_rate
-        pokemonInfo.growth_rate = pokemonSpecies.growth_rate.name
-        
-        pokemonInfo.evolution_base =  getPokemonIDFromURL(pokemonEvolution.chain.species.url)
+        const pokemonFirstSpeciesResp = await fetch(pokemonEvolution.chain.species.url)
+        const pokemonFirstSpecies = await pokemonFirstSpeciesResp.json()
 
-        if(pokemonEvolution.chain["evolves_to"][0]){
-            pokemonInfo.evolution_second = getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].species.url)
-            if(pokemonEvolution.chain["evolves_to"][0].evolves_to[0]){
-            pokemonInfo.evolution_third = getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url)
+        pokemonFirstSpeciesObject.bio = replaceEmDashSymbols(pokemonFirstSpecies.flavor_text_entries[6].flavor_text)
+        pokemonFirstSpeciesObject.genus = pokemonFirstSpecies.genera[7].genus
+        pokemonFirstSpeciesObject.base_happiness = pokemonFirstSpecies.base_happiness
+        pokemonFirstSpeciesObject.capture_rate = pokemonFirstSpecies.capture_rate
+        pokemonFirstSpeciesObject.growth_rate = pokemonFirstSpecies.growth_rate.name
+
+        pokemonFirstSpeciesObject.base_evolution = {
+            id: getPokemonIDFromURL(pokemonEvolution.chain.species.url),
+            name: pokemonFirstSpecies.name
+        }
+
+        const pokemonResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonEvolution.chain.species.name}`)
+        const pokemon = await pokemonResp.json()
+
+        objectTemp["first"].push(pokemonFirstSpeciesObject)
+        objectTemp["first"].push(pokemon)
+
+        if (pokemonEvolution.chain["evolves_to"][0]) {
+            //objectTemp["second"] = pokemonEvolution.chain["evolves_to"][0].species.url
+            objectTemp["second"] = []
+
+            const pokemonSecondSpeciesObject = {}
+
+            const pokemonSecondSpeciesResp = await fetch(pokemonEvolution.chain["evolves_to"][0].species.url)
+            const pokemonSecondSpecies = await pokemonSecondSpeciesResp.json()
+
+            pokemonSecondSpeciesObject.bio = replaceEmDashSymbols(pokemonSecondSpecies.flavor_text_entries[6].flavor_text)
+            pokemonSecondSpeciesObject.genus = pokemonSecondSpecies.genera[7].genus
+            pokemonSecondSpeciesObject.base_happiness = pokemonSecondSpecies.base_happiness
+            pokemonSecondSpeciesObject.capture_rate = pokemonSecondSpecies.capture_rate
+            pokemonSecondSpeciesObject.growth_rate = pokemonSecondSpecies.growth_rate.name
+
+            pokemonSecondSpeciesObject.base_evolution = {
+                id: getPokemonIDFromURL(pokemonEvolution.chain.species.url),
+                name: pokemonFirstSpecies.name
+            }
+            pokemonFirstSpeciesObject.first_evolution = {
+                id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].species.url),
+                name: pokemonSecondSpecies.name
+            }
+
+            const pokemonSecondResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonEvolution.chain["evolves_to"][0].species.name}`)
+            const pokemonSecond = await pokemonSecondResp.json()
+
+            objectTemp["second"].push(pokemonSecondSpeciesObject)
+            objectTemp["second"].push(pokemonSecond)
+            if (pokemonEvolution.chain["evolves_to"][0].evolves_to[0]) {
+                //objectTemp["third"] = pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url
+                const pokemonThirdName = pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.name
+                objectTemp["third"] = []
+
+                const pokemonThirdSpeciesObject = {}
+
+                const pokemonThirdSpeciesResp = await fetch(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url)
+                const pokemonThirdSpecies = await pokemonThirdSpeciesResp.json()
+
+                pokemonThirdSpeciesObject.bio = replaceEmDashSymbols(pokemonThirdSpecies.flavor_text_entries[6].flavor_text)
+                pokemonThirdSpeciesObject.genus = pokemonThirdSpecies.genera[7].genus
+                pokemonThirdSpeciesObject.base_happiness = pokemonThirdSpecies.base_happiness
+                pokemonThirdSpeciesObject.capture_rate = pokemonThirdSpecies.capture_rate
+                pokemonThirdSpeciesObject.growth_rate = pokemonThirdSpecies.growth_rate.name
+                console.log(pokemonThirdSpecies)
+
+                pokemonFirstSpeciesObject.second_evolution =
+                {
+                    id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url),
+                    name:pokemonThirdSpecies.name
+                }
+                pokemonSecondSpeciesObject.first_evolution =
+                {
+                    id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].species.url),
+                    name: pokemonSecondSpecies.name
+                }
+                pokemonSecondSpeciesObject.second_evolution =
+                {
+                    id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url),
+                    name: pokemonThirdSpecies.name
+                }
+                pokemonThirdSpeciesObject.base_evolution =
+                {
+                    id: getPokemonIDFromURL(pokemonEvolution.chain.species.url),
+                    name: pokemonFirstSpecies.name
+                }
+                pokemonThirdSpeciesObject.first_evolution =
+                {
+                    id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].species.url),
+                    name: pokemonSecondSpecies.name
+                }
+                pokemonThirdSpeciesObject.second_evolution =
+                {
+                    id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url),
+                    name: pokemonThirdSpecies.name
+                }
+
+                const pokemonThirdResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonThirdName}`)
+                const pokemonThird = await pokemonThirdResp.json()
+
+                objectTemp["third"].push(pokemonThirdSpeciesObject)
+                objectTemp["third"].push(pokemonThird)
             }
         }
-        
-        // console.log(pokemonInfo)
-        // console.log(pokemonSpecies)
-        // console.log(pokemonEvolution)
-        
-        pokemonsTemp.push(pokemonInfo)
+
+
+
+        pokemonsEvoArray.push(objectTemp)
+
+        //console.log(pokemonsEvoArray)
+        // // console.log(pokemonInfo)
+        // // console.log(pokemonSpecies)
+        // // console.log(pokemonEvolution)
+
+        // pokemonsTemp.push(pokemonInfo)
     }
-    console.log(pokemonsTemp)
+    //console.log(pokemonsTemp)
     //})
 }
 
+async function fetchDetails() {
+
+}
+
 //Display pokemon
-let currentIndex = 0;
+let curIndex = 0;
 const listContainer = document.querySelector('#pokemonList')
 
-const displayPokemon = (pokemonInfo) => {
+const displayPokemon = (speciesInfo, pokemonInfo) => {
 
     const flipBox = document.createElement('div')
     const flipBoxInner = document.createElement('div')
@@ -82,12 +180,12 @@ const displayPokemon = (pokemonInfo) => {
     li.append(flipBox)
     listContainer.append(li)
 
-    displayFront(pokemonInfo, flipBoxFront)
-    displayBack(pokemonInfo, flipBoxBack)
+    displayFront(speciesInfo, pokemonInfo, flipBoxFront)
+    displayBack(speciesInfo, pokemonInfo, flipBoxBack)
 
 }
 
-function displayFront(pokemonInfo, flipBoxFront) {
+function displayFront(speciesInfo, pokemonInfo, flipBoxFront) {
 
     const pokemonImgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonInfo.id}.png`
     const pokemonName = capitalizedStr(pokemonInfo.name)
@@ -100,7 +198,7 @@ function displayFront(pokemonInfo, flipBoxFront) {
         <input type="button" class="learnMoreButton" value="Learn More">`
 }
 
-function displayBack(pokemonInfo, flipBoxBack) {
+function displayBack(speciesInfo, pokemonInfo, flipBoxBack) {
 
     const div_container_grid_1 = document.createElement('div')
     const pokemonId = pokemonInfo.id.toString().padStart(4, '0')
@@ -162,7 +260,7 @@ function displayBack(pokemonInfo, flipBoxBack) {
             <div class="item-grid-2-col-1-5 backSubHeaderFontStyle">About</div>
             <hr class="item-grid-2-col-1-5 horizontal">
             <div class="item-grid-2-col-2-3 backListFontStyle">Species</div>
-            <div class="item-grid-2-col-3-5">${pokemonInfo.genus}</div>
+            <div class="item-grid-2-col-3-5">${speciesInfo.genus}</div>
             <div class="item-grid-2-col-2-3 backListFontStyle">Weight</div>
             <div class="item-grid-2-col-3-5">${pokemonInfo.weight}kg</div>
             <div class="item-grid-2-col-2-3 backListFontStyle">Abilities</div>
@@ -233,8 +331,9 @@ function displayBack(pokemonInfo, flipBoxBack) {
     //     console.log(`typeLabel.type.name: ${typeLabel.type.name}`)
     // })
 }
-let nextIndex = 0;
 //Buttons to interact
+let nextIndex = 0;
+
 function interactiveButtons() {
     document.addEventListener('keyup', event => {
         if (event.code === 'Space') {
@@ -251,23 +350,39 @@ function interactiveButtons() {
     const prevButton = document.querySelector('#prevButton')
     nextButton.addEventListener('click', () => {
         listContainer.innerHTML = ""
+        curIndex++
 
-        nextIndex = currentIndex + 3
+        displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
+        displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
+        displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
+    })
 
-        for(currentIndex;currentIndex<nextIndex;currentIndex++){
-            displayPokemon(pokemonsTemp[currentIndex])
-        }
-        
+    prevButton.addEventListener('click', () => {
+        listContainer.innerHTML = ""
+        curIndex--
+
+        displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
+        displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
+        displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
     })
 
     const formSearchPokemon = document.querySelector('#formSearchPokemon')
     formSearchPokemon.addEventListener('submit', async (event) => {
-        // const pokeUrl = 'https://pokeapi.co/api/v2/pokemon?limit=1'
+
         event.preventDefault()
 
-        const array = pokemonArray_temp[0].results.filter((pokemon) => pokemon.name.toLowerCase().includes(searchPokemonName.value.toLowerCase()))
+        const recommendedPokemons = []
+        pokemonsEvoArray.forEach((pokemon) => {
+            for (const key in pokemon) {
+                if (pokemon[key][1].name.toLowerCase().includes(searchPokemonName.value.toLowerCase())) {
+                    console.log(pokemon[key])
+                    recommendedPokemons.push(pokemon[key])
+                }
+            }
+        })
 
-        const result = array.find(({ name }) => name === searchPokemonName.value.toLowerCase());
+        const result = recommendedPokemons.find((pokemon) => pokemon[1].name === searchPokemonName.value.toLowerCase());
+
         console.log("result", result)
         const recList = document.querySelector("#recomendationList")
         recList.innerHTML = ""
@@ -275,13 +390,9 @@ function interactiveButtons() {
         if (result) {
             displaySearchedPokemon(result)
         } else {
-            //if it's 1 or 2 letters, give recommendation
-            console.log(array)
-
-            array.forEach((pokemon) => {
+            recommendedPokemons.forEach((pokemon) => {
                 const li = document.createElement("li")
-                li.innerText = pokemon.name
-                //li.id = el.name
+                li.innerText = pokemon[1].name
 
                 li.addEventListener('click', (event) => {
                     recList.innerHTML = ""
@@ -296,18 +407,139 @@ function interactiveButtons() {
     })
 }
 
+interactiveButtons()
+
+
+//Filter
+async function displaySearchedPokemon(pokemon) {
+
+    const searchedPokemonContainer = document.querySelector(".searchedPokemonContainer")
+
+    let abilityHTML = ``
+
+    pokemon[1].abilities.forEach((abilityLabel) => {
+        const abilityName = capitalizedStr(abilityLabel.ability.name)
+        !abilityHTML ?
+            (abilityHTML = `<div class="item-grid-2-col-3-5">${abilityName},</div>`)
+            : (abilityHTML = abilityHTML + `<div class="item-grid-2-col-3-5">${abilityName}</div>`)
+    })
+
+
+    const pokemonImgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon[1].id}.png`
+    const pokemonImgBase = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon[0].base_evolution.id}.png`
+    const pokemonImgSecond = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon[0].first_evolution.id}.png`
+    const pokemonImgThird = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon[0].second_evolution.id}.png`
+
+    const statsObject = {}
+
+    pokemon[1].stats.forEach((statLabel) => {
+        let statNameArray = statLabel.stat.name.split('-')
+
+        if (statNameArray[1]) {
+
+            const newString = capitalizedStr(statNameArray[1])
+            statNameArray[1] = newString
+            statNameArray = statNameArray.join("")
+        }
+
+        statsObject[statNameArray] = { top: 0, bottom: 0 }
+        statsObject[statNameArray].top = Math.round((255 - statLabel.base_stat) / 255 * 100)
+        statsObject[statNameArray].bottom = Math.round(statLabel.base_stat / 255 * 100)
+    })
+
+    const pokemonBaseName = pokemon[0].base_evolution.name
+    const pokemonFirstEvoName = pokemon[0].first_evolution.name
+    const pokemonSecondEvoName = pokemon[0].second_evolution.name
+
+    // Height needs to convert from meter to cm?
+    searchedPokemonContainer.innerHTML =
+        `<div class="pokemonColumns greenColor">
+            <div class="container-grid-2">
+                <img class="searchedPokemonImg item-grid-2-col-1-5" src="${pokemonImgSrc}" alt="${pokemon[1].name}">
+            </div>
+        </div>
+
+        <div class="pokemonColumns">
+            <div class="container-grid-2">
+                <h2 class="item-grid-2-col-1-5">Bio</h2>
+                <p class="item-grid-2-col-1-5">${pokemon[0].bio}</p>
+            
+                <div class="item-grid-2-col-1-2">Genus:</div>
+                <div class="item-grid-2-col-2-4">${pokemon[0].genus}</div>
+                <div class="item-grid-2-col-1-2">Height:</div>
+                <div class="item-grid-2-col-2-4">${pokemon[1].height}</div>
+                <div class="item-grid-2-col-1-2">Weight:</div>
+                <div class="item-grid-2-col-2-4">${pokemon[1].weight}kg</div>
+                <div class="item-grid-2-col-1-2">Abilities:</div>
+                <div class="item-grid-2-col-2-4">${abilityHTML}</div>
+                
+                <h2 class="item-grid-2-col-1-5">Training</h2>
+                <div class="item-grid-2-col-1-2">Base Exp:</div>
+                <div class="item-grid-2-col-2-4">${pokemon[1].base_experience}</div>
+                <div class="item-grid-2-col-1-2">Base Happiness:</div>
+                <div class="item-grid-2-col-2-4">${pokemon[0].base_happiness}</div>
+                <div class="item-grid-2-col-1-2">Catch Rate:</div>
+                <div class="item-grid-2-col-2-4">${pokemon[0].capture_rate}</div>
+                <div class="item-grid-2-col-1-2">Growth Rate:</div>
+                <div class="item-grid-2-col-2-4">${pokemon[0].growth_rate}</div>
+            </div>
+        </div>
+        <div class="pokemonColumns">
+            <h2>Evolution</h2>
+            <div class="container-grid-2">
+                <div class="item-grid-2-col-1-2"><img class="roundedImage" src="${pokemonImgBase}" alt="${pokemonBaseName}"></div>
+                <div class="item-grid-2-col-2-3"><img class="roundedImage" src="${pokemonImgSecond}" alt="${pokemonFirstEvoName}"></div>
+                <div class="item-grid-2-col-3-4"><img class="roundedImage" src="${pokemonImgThird}" alt="${pokemonSecondEvoName}"></div>
+            </div>
+            <h2>Stats</h2>
+            <div class="chart">
+                <div class="bar" style="--bar-ratio: 100%;">
+                    <div class="section" style="--section-value: ${statsObject.hp.top};" data-value="20"></div>
+                    <div class="section hpColor" style="--section-value: ${statsObject.hp.bottom};" data-value="50"></div>
+                    <div class="label">HP</div>
+                </div>
+                <div class="bar">
+                    <div class="section" style="--section-value: ${statsObject.attack.top};" data-value="20"></div>
+                    <div class="section attkColor" style="--section-value: ${statsObject.attack.bottom};" data-value="50"></div>
+                    <div class="label">Att</div>
+                </div>
+                <div class="bar">
+                    <div class="section" style="--section-value: ${statsObject.defense.top};" data-value="20"></div>
+                    <div class="section defColor" style="--section-value: ${statsObject.defense.bottom};" data-value="50"></div>
+                    <div class="label">Def</div>
+                </div>
+                <div class="bar">
+                    <div class="section" style="--section-value: ${statsObject.specialAttack.top};" data-value="20"></div>
+                    <div class="section spAttkColor" style="--section-value: ${statsObject.specialAttack.bottom};" data-value="50"></div>
+                    <div class="label">S.Att</div>
+                </div>
+                <div class="bar">
+                    <div class="section" style="--section-value: ${statsObject.specialDefense.top};" data-value="20"></div>
+                    <div class="section spDefColor" style="--section-value: ${statsObject.specialDefense.bottom};" data-value="50"></div>
+                    <div class="label">S.Def</div>
+                </div>
+                <div class="bar">
+                    <div class="section" style="--section-value: ${statsObject.speed.top};" data-value="20"></div>
+                    <div class="section speedColor" style="--section-value: ${statsObject.speed.bottom};" data-value="50"></div>
+                    <div class="label">Spd</div>
+                </div>
+            </div>
+        </div>`
+
+}
+
 
 //Utility functions
 
-function getPokemonIDFromURL(url){
+function getPokemonIDFromURL(url) {
     return url.split("/")[6]
 }
 
-function replaceEmDashSymbols(text){
+function replaceEmDashSymbols(text) {
     return text.replace(/\u2013|\u2014/g, "-");
 }
 
-function convertStatsToPercentage(stats){
+function convertStatsToPercentage(stats) {
     stats.forEach((statLabel) => {
         let statNameArray = statLabel.stat.name.split('-')
 
