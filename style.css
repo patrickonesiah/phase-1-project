@@ -14,7 +14,6 @@ body{
 
 #pokemonList {
     display: flex;
-    padding: 35px;
     gap: 50px;
     flex-wrap: wrap;
     justify-content: center;
@@ -121,6 +120,7 @@ button {
     height: 650px;
     border-radius: 15px;
     perspective: 1000px;
+    display: flex;
 }
 
 .flip-box-inner {
@@ -369,7 +369,7 @@ transform: rotateY(180deg);
     border-radius: 50px;
 }
 
-.searchedPokemonContainer {
+#searchedPokemonContainer {
     display: flex;
 }
 

@@ -1,4 +1,4 @@
-const pokemonLimit = 20;
+const pokemonLimit = 25;
 const speciesID = 0
 const pokemonDetails = 1
 
@@ -12,9 +12,6 @@ async function getPokemons() {
     await storePokemon(pokemonsEvolutionArray)
 
     displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
-    displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
-    displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
-
 }
 
 getPokemons();
@@ -35,8 +32,12 @@ async function storePokemon(pokemonsEvolutionArray) {
         const pokemonFirstSpeciesResp = await fetch(pokemonEvolution.chain.species.url)
         const pokemonFirstSpecies = await pokemonFirstSpeciesResp.json()
 
-        pokemonFirstSpeciesObject.bio = replaceEmDashSymbols(pokemonFirstSpecies.flavor_text_entries[6].flavor_text)
-        pokemonFirstSpeciesObject.genus = pokemonFirstSpecies.genera[7].genus
+        const bioFirstInfo = pokemonFirstSpecies.flavor_text_entries.find(element => element.language.name === "en")
+        pokemonFirstSpeciesObject.bio = bioFirstInfo.flavor_text
+
+        const genusFirstInfo = pokemonFirstSpecies.genera.find(element => element.language.name === "en")
+        pokemonFirstSpeciesObject.genus = genusFirstInfo.genus
+
         pokemonFirstSpeciesObject.base_happiness = pokemonFirstSpecies.base_happiness
         pokemonFirstSpeciesObject.capture_rate = pokemonFirstSpecies.capture_rate
         pokemonFirstSpeciesObject.growth_rate = pokemonFirstSpecies.growth_rate.name
@@ -62,8 +63,13 @@ async function storePokemon(pokemonsEvolutionArray) {
             const pokemonSecondSpeciesResp = await fetch(pokemonEvolution.chain["evolves_to"][0].species.url)
             const pokemonSecondSpecies = await pokemonSecondSpeciesResp.json()
 
-            pokemonSecondSpeciesObject.bio = replaceEmDashSymbols(pokemonSecondSpecies.flavor_text_entries[6].flavor_text)
-            pokemonSecondSpeciesObject.genus = pokemonSecondSpecies.genera[7].genus
+            const bioSecondInfo = pokemonSecondSpecies.flavor_text_entries.find(element => element.language.name === "en")
+            pokemonSecondSpeciesObject.bio = bioSecondInfo.flavor_text
+
+            const genusSecondInfo = pokemonSecondSpecies.genera.find(element => element.language.name === "en")
+            pokemonSecondSpeciesObject.genus = genusSecondInfo.genus
+
+
             pokemonSecondSpeciesObject.base_happiness = pokemonSecondSpecies.base_happiness
             pokemonSecondSpeciesObject.capture_rate = pokemonSecondSpecies.capture_rate
             pokemonSecondSpeciesObject.growth_rate = pokemonSecondSpecies.growth_rate.name
@@ -71,6 +77,10 @@ async function storePokemon(pokemonsEvolutionArray) {
             pokemonSecondSpeciesObject.base_evolution = {
                 id: getPokemonIDFromURL(pokemonEvolution.chain.species.url),
                 name: pokemonFirstSpecies.name
+            }
+            pokemonSecondSpeciesObject.first_evolution = {
+                id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].species.url),
+                name: pokemonSecondSpecies.name
             }
             pokemonFirstSpeciesObject.first_evolution = {
                 id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].species.url),
@@ -92,22 +102,19 @@ async function storePokemon(pokemonsEvolutionArray) {
                 const pokemonThirdSpeciesResp = await fetch(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url)
                 const pokemonThirdSpecies = await pokemonThirdSpeciesResp.json()
 
-                pokemonThirdSpeciesObject.bio = replaceEmDashSymbols(pokemonThirdSpecies.flavor_text_entries[6].flavor_text)
-                pokemonThirdSpeciesObject.genus = pokemonThirdSpecies.genera[7].genus
+                const bioInfo = pokemonThirdSpecies.flavor_text_entries.find(element => element.language.name === "en")
+                pokemonThirdSpeciesObject.bio = bioInfo.flavor_text
+
+                const genusInfo = pokemonThirdSpecies.genera.find(element => element.language.name === "en")
+                pokemonThirdSpeciesObject.genus = genusInfo.genus
+
                 pokemonThirdSpeciesObject.base_happiness = pokemonThirdSpecies.base_happiness
                 pokemonThirdSpeciesObject.capture_rate = pokemonThirdSpecies.capture_rate
-                pokemonThirdSpeciesObject.growth_rate = pokemonThirdSpecies.growth_rate.name
-                console.log(pokemonThirdSpecies)
 
                 pokemonFirstSpeciesObject.second_evolution =
                 {
                     id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url),
                     name: pokemonThirdSpecies.name
-                }
-                pokemonSecondSpeciesObject.first_evolution =
-                {
-                    id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].species.url),
-                    name: pokemonSecondSpecies.name
                 }
                 pokemonSecondSpeciesObject.second_evolution =
                 {
@@ -346,24 +353,105 @@ function interactiveButtons() {
         }
     })
 
+    const nextButtonShowOnlyOne = document.querySelector('#nextButtonShowOnlyOne')
+
+    nextButtonShowOnlyOne.addEventListener('click', () => {
+        const numberOfCards = document.querySelectorAll("#pokemonList >  li")
+
+        if (numberOfCards.length === 1 && pokemonsEvoArray[curIndex].hasOwnProperty("second")) {
+            displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
+        }
+        if (numberOfCards.length === 2 && pokemonsEvoArray[curIndex].hasOwnProperty("third")) {
+            displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
+        }
+        if (pokemonsEvoArray[curIndex + 1]) {
+            if (numberOfCards.length === 2 && !pokemonsEvoArray[curIndex].hasOwnProperty("third")) {
+                curIndex++
+                if (curIndex >= pokemonLimit) curIndex = pokemonLimit - 1
+                listContainer.innerHTML = ""
+
+                displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
+            }
+        }
+        if (numberOfCards.length === 3) {
+            curIndex++
+            if (curIndex >= pokemonLimit) curIndex = pokemonLimit - 1
+            listContainer.innerHTML = ""
+
+            if (pokemonsEvoArray[curIndex + 1]) {
+                displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
+            } else {
+                displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
+                displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
+                displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
+            }
+        }
+
+    })
+
+    const prevButtonShowOnlyOne = document.querySelector('#prevButtonShowOnlyOne')    
+
+    prevButtonShowOnlyOne.addEventListener('click', () => {
+        const numberOfCards = document.querySelectorAll("#pokemonList >  li")
+        console.log("curIndex: ", curIndex)
+        if (pokemonsEvoArray[curIndex - 1]) {
+            if (numberOfCards.length === 1) {
+                curIndex--
+                if (curIndex < 0) curIndex = curIndex + 1
+                listContainer.innerHTML = ""
+                displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
+                displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
+                if (pokemonsEvoArray[curIndex].hasOwnProperty("third")) {
+                    displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
+                }
+            }
+        }
+        if (numberOfCards.length === 2) {
+            listContainer.innerHTML = ""
+            displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
+        }
+        if (numberOfCards.length === 3) {
+            listContainer.innerHTML = ""
+            displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
+            displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
+        }
+
+    })
+
     const nextButton = document.querySelector('#nextButton')
-    const prevButton = document.querySelector('#prevButton')
+
     nextButton.addEventListener('click', () => {
         listContainer.innerHTML = ""
+
         curIndex++
 
+        if (curIndex >= pokemonLimit) curIndex = pokemonLimit - 1
+
         displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
-        displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
-        displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
+        if (pokemonsEvoArray[curIndex].hasOwnProperty("second")) {
+            displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
+            if (pokemonsEvoArray[curIndex].hasOwnProperty("third")) {
+                displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
+            }
+        }
+
     })
+
+    const prevButton = document.querySelector('#prevButton')   
 
     prevButton.addEventListener('click', () => {
         listContainer.innerHTML = ""
         curIndex--
 
+        if (curIndex < 0) curIndex = curIndex + 1
+
         displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
-        displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
-        displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
+        if (pokemonsEvoArray[curIndex].hasOwnProperty("second")) {
+            displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
+            if (pokemonsEvoArray[curIndex].hasOwnProperty("third")) {
+                displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
+            }
+        }
     })
 
     const formSearchPokemon = document.querySelector('#formSearchPokemon')
@@ -375,7 +463,6 @@ function interactiveButtons() {
         pokemonsEvoArray.forEach((pokemon) => {
             for (const key in pokemon) {
                 if (pokemon[key][1].name.toLowerCase().includes(searchPokemonName.value.toLowerCase())) {
-                    console.log(pokemon[key])
                     recommendedPokemons.push(pokemon[key])
                 }
             }
@@ -383,14 +470,13 @@ function interactiveButtons() {
 
         const result = recommendedPokemons.find((pokemon) => pokemon[1].name === searchPokemonName.value.toLowerCase());
 
-        console.log("result", result)
         const recList = document.querySelector("#recomendationList")
         recList.innerHTML = ""
 
         if (result) {
             displaySearchedPokemon(result)
         } else {
-            console.log("recommendedPokemons", recommendedPokemons)
+
             recommendedPokemons.forEach((pokemon) => {
                 const li = document.createElement("li")
                 li.innerText = pokemon[1].name
@@ -404,23 +490,16 @@ function interactiveButtons() {
             })
         }
 
-        //formSearchPokemon.reset()
     })
 }
 
 function buttonEvoImages() {
 
     const roundedImage = document.querySelectorAll('.roundedImage')
-
+    console.log("Clicked", roundedImage)
     roundedImage.forEach(pokemonImage => {
         pokemonImage.addEventListener('click', (event) => {
-            // pokemonsEvoArray.forEach((pokemon) => {
-            //     for (const key in pokemon) {
-            //         if (pokemon[key][1].name === event.target.alt) {
-            //            displaySearchedPokemon(pokemon[key])
-            //         }
-            //     }
-            // })
+
             let pokemonFound;
 
             pokemonsEvoArray.find(pokemonEvo => {
@@ -436,7 +515,6 @@ function buttonEvoImages() {
         })
     })
 
-
 }
 
 interactiveButtons()
@@ -445,7 +523,7 @@ interactiveButtons()
 //Filter
 async function displaySearchedPokemon(pokemon) {
 
-    const searchedPokemonContainer = document.querySelector(".searchedPokemonContainer")
+    const searchedPokemonContainer = document.querySelector("#searchedPokemonContainer")
 
     let abilityHTML = ``
 
@@ -459,8 +537,6 @@ async function displaySearchedPokemon(pokemon) {
 
     const pokemonImgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon[1].id}.png`
     const pokemonImgBase = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon[0].base_evolution.id}.png`
-    const pokemonImgSecond = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon[0].first_evolution.id}.png`
-    const pokemonImgThird = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon[0].second_evolution.id}.png`
 
     const statsObject = {}
 
@@ -479,9 +555,7 @@ async function displaySearchedPokemon(pokemon) {
         statsObject[statNameArray].bottom = Math.round(statLabel.base_stat / 255 * 100)
     })
 
-    const pokemonBaseName = pokemon[0].base_evolution.name
-    const pokemonFirstEvoName = pokemon[0].first_evolution.name
-    const pokemonSecondEvoName = pokemon[0].second_evolution.name
+    const pokemonBaseName = pokemon[0].base_evolution.name   
 
     // Height needs to convert from meter to cm?
     searchedPokemonContainer.innerHTML =
@@ -518,10 +592,8 @@ async function displaySearchedPokemon(pokemon) {
         </div>
         <div class="pokemonColumns">
             <h2>Evolution</h2>
-            <div class="container-grid-2">
+            <div class="container-grid-2" id="evolutionRoundImage">
                 <button class="item-grid-2-col-1-2"><img class="roundedImage" src="${pokemonImgBase}" alt="${pokemonBaseName}"></button>
-                <button class="item-grid-2-col-2-3"><img class="roundedImage" src="${pokemonImgSecond}" alt="${pokemonFirstEvoName}"></button>
-                <button class="item-grid-2-col-3-4"><img class="roundedImage" src="${pokemonImgThird}" alt="${pokemonSecondEvoName}"></button>
             </div>
             <h2>Stats</h2>
             <div class="chart">
@@ -557,6 +629,27 @@ async function displaySearchedPokemon(pokemon) {
                 </div>
             </div>
         </div>`
+
+    const roundedImageElement = document.querySelector("#evolutionRoundImage")
+    if (pokemon[0].hasOwnProperty("first_evolution")) {
+        const pokemonFirstEvoName = pokemon[0].first_evolution.name
+        const imageSecond = document.createElement("button")
+        const pokemonImgSecond = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon[0].first_evolution.id}.png`
+        imageSecond.className = "item-grid-2-col-2-3"
+        imageSecond.innerHTML = `<img class="roundedImage" src="${pokemonImgSecond}" alt="${pokemonFirstEvoName}">`
+        roundedImageElement.appendChild(imageSecond)
+
+        if (pokemon[0].hasOwnProperty("second_evolution")) {
+            const pokemonSecondEvoName = pokemon[0].second_evolution.name
+            const imageThird = document.createElement("button")
+            const pokemonImgThird = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon[0].second_evolution.id}.png`
+
+            imageThird.className = "item-grid-2-col-3-4"
+            imageThird.innerHTML = `<img class="roundedImage" src="${pokemonImgThird}" alt="${pokemonSecondEvoName}">`
+            roundedImageElement.appendChild(imageThird)
+
+        }
+    }
 
     buttonEvoImages()
 }
