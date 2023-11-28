@@ -1,4 +1,4 @@
-const pokemonLimit = 25;
+const pokemonLimit = 15;
 const speciesID = 0
 const pokemonDetails = 1
 
@@ -10,7 +10,7 @@ async function getPokemons() {
     const pokemonsEvolutionArray = await pokemonsEvolutionResponse.json()
 
     await storePokemon(pokemonsEvolutionArray)
-
+    console.log(pokemonsEvoArray)
     displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
     if (pokemonsEvoArray[curIndex].hasOwnProperty("second")) {
         displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
@@ -18,7 +18,6 @@ async function getPokemons() {
             displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
         }
     }
-    displaySearchedPokemon(pokemon)
 }
 
 getPokemons();
@@ -61,7 +60,6 @@ async function storePokemon(pokemonsEvolutionArray) {
         objectTemp["first"].push(pokemon)
 
         if (pokemonEvolution.chain["evolves_to"][0]) {
-            //objectTemp["second"] = pokemonEvolution.chain["evolves_to"][0].species.url
             const pokemonSecondName = pokemonEvolution.chain["evolves_to"][0].species.name
             objectTemp["second"] = []
 
@@ -100,7 +98,6 @@ async function storePokemon(pokemonsEvolutionArray) {
             objectTemp["second"].push(pokemonSecondSpeciesObject)
             objectTemp["second"].push(pokemonSecond)
             if (pokemonEvolution.chain["evolves_to"][0].evolves_to[0]) {
-                //objectTemp["third"] = pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url
                 const pokemonThirdName = pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.name
                 objectTemp["third"] = []
 
@@ -151,23 +148,8 @@ async function storePokemon(pokemonsEvolutionArray) {
                 objectTemp["third"].push(pokemonThird)
             }
         }
-
-
-
         pokemonsEvoArray.push(objectTemp)
-
-        //console.log(pokemonsEvoArray)
-        // // console.log(pokemonInfo)
-        // // console.log(pokemonSpecies)
-        // // console.log(pokemonEvolution)
-
-        // pokemonsTemp.push(pokemonInfo)
     }
-    //console.log(pokemonsTemp)
-    //})
-}
-
-async function fetchDetails() {
 
 }
 
@@ -175,7 +157,7 @@ async function fetchDetails() {
 let curIndex = 0;
 const listContainer = document.querySelector('#pokemonList')
 
-const displayPokemon = (speciesInfo, pokemonInfo) => {
+function displayPokemon(speciesInfo, pokemonInfo) {
 
     const flipBox = document.createElement('div')
     const flipBoxInner = document.createElement('div')
@@ -194,12 +176,12 @@ const displayPokemon = (speciesInfo, pokemonInfo) => {
     li.append(flipBox)
     listContainer.append(li)
 
-    displayFront(speciesInfo, pokemonInfo, flipBoxFront)
+    displayFront(pokemonInfo, flipBoxFront)
     displayBack(speciesInfo, pokemonInfo, flipBoxBack)
 
 }
 
-function displayFront(speciesInfo, pokemonInfo, flipBoxFront) {
+function displayFront(pokemonInfo, flipBoxFront) {
 
     const pokemonImgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonInfo.id}.png`
     const pokemonName = capitalizedStr(pokemonInfo.name)
@@ -209,7 +191,7 @@ function displayFront(speciesInfo, pokemonInfo, flipBoxFront) {
         `<div class="pokemonId">${pokemonNumber}</div>
         <img class="pokemonImgStyle" src="${pokemonImgSrc}" alt="${pokemonName}">
         <div class="pokemonName">${pokemonName}</div>
-        <input type="button" class="learnMoreButton" value="Learn More">`
+        <p class="learnMoreButton">Press the F key to learn more</p>`
 }
 
 function displayBack(speciesInfo, pokemonInfo, flipBoxBack) {
@@ -341,14 +323,13 @@ function displayBack(speciesInfo, pokemonInfo, flipBoxBack) {
     flipBoxBack.appendChild(div_container_grid_1)
     flipBoxBack.appendChild(div_container_grid_2)
     flipBoxBack.appendChild(div_container_grid_3)
-    // pokemonInfo.types.forEach((typeLabel) => {
-    //     console.log(`typeLabel.type.name: ${typeLabel.type.name}`)
-    // })
 }
-//Buttons to interact
+
+//Buttons for interaction
 let nextIndex = 0;
 
 function interactiveButtons() {
+    //Flip cards
     document.addEventListener('keydown', event => {
         if (event.code === 'KeyF') {
             const cards = document.querySelectorAll('.flip-box-inner')
@@ -358,6 +339,7 @@ function interactiveButtons() {
         }
     })
 
+    //Previous and Next button for Pokemon and Group
     const nextButtonShowOnlyOne = document.querySelector('#nextButtonShowOnlyOne')
 
     nextButtonShowOnlyOne.addEventListener('click', () => {
@@ -377,24 +359,18 @@ function interactiveButtons() {
 
                 displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
             }
-        }
-        if (numberOfCards.length === 3) {
-            curIndex++
-            if (curIndex >= pokemonLimit) curIndex = pokemonLimit - 1
-            listContainer.innerHTML = ""
+            if (numberOfCards.length === 3) {
+                curIndex++
+                if (curIndex >= pokemonLimit) curIndex = pokemonLimit - 1
+                listContainer.innerHTML = ""
 
-            if (pokemonsEvoArray[curIndex + 1]) {
                 displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
-            } else {
-                displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
-                displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
-                displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
             }
         }
 
     })
 
-    const prevButtonShowOnlyOne = document.querySelector('#prevButtonShowOnlyOne')    
+    const prevButtonShowOnlyOne = document.querySelector('#prevButtonShowOnlyOne')
 
     prevButtonShowOnlyOne.addEventListener('click', () => {
         const numberOfCards = document.querySelectorAll("#pokemonList >  li")
@@ -442,7 +418,7 @@ function interactiveButtons() {
 
     })
 
-    const prevButton = document.querySelector('#prevButton')   
+    const prevButton = document.querySelector('#prevButton')
 
     prevButton.addEventListener('click', () => {
         listContainer.innerHTML = ""
@@ -459,6 +435,7 @@ function interactiveButtons() {
         }
     })
 
+    //Find all Pokemon possibilities as client types 
     const formSearchPokemon = document.querySelector('#formSearchPokemon')
     formSearchPokemon.addEventListener('keyup', (event) => {
 
@@ -498,6 +475,7 @@ function interactiveButtons() {
     })
 }
 
+//Add event listener to the Pokemon evolution images
 function buttonEvoImages() {
 
     const roundedImage = document.querySelectorAll('.roundedImage')
@@ -509,7 +487,7 @@ function buttonEvoImages() {
 
             pokemonsEvoArray.find(pokemonEvo => {
                 for (const pokemon in pokemonEvo) {
-                    if (pokemonEvo[pokemon][1].name === event.target.alt) {
+                    if (pokemonEvo[pokemon][1].name === event.target.id) {
                         pokemonFound = pokemonEvo[pokemon]
                         return
                     }
@@ -525,8 +503,8 @@ function buttonEvoImages() {
 interactiveButtons()
 
 
-//Filter
-async function displaySearchedPokemon(pokemon) {
+//Display additional information under Pokemon Search
+function displaySearchedPokemon(pokemon) {
 
     const searchedPokemonContainer = document.querySelector("#searchedPokemonContainer")
 
@@ -560,12 +538,11 @@ async function displaySearchedPokemon(pokemon) {
         statsObject[statNameArray].bottom = Math.round(statLabel.base_stat / 255 * 100)
     })
 
-    const pokemonBaseName = pokemon[0].base_evolution.name   
+    const pokemonBaseName = pokemon[0].base_evolution.name
     const pokemonHeight = pokemon[1].height * 10
 
-    // Height needs to convert from meter to cm?
     searchedPokemonContainer.innerHTML =
-        `<div class="pokemonColumns greenColor">
+        `<div class="pokemonColumns">
             <div class="container-grid-2">
                 <img class="searchedPokemonImg item-grid-2-col-1-5" src="${pokemonImgSrc}" alt="${pokemon[1].name}">
             </div>
@@ -599,7 +576,7 @@ async function displaySearchedPokemon(pokemon) {
         <div class="pokemonColumns">
             <h3>Evolution</h3>
             <div class="container-grid-2" id="evolutionRoundImage">
-                <button class="item-grid-2-col-1-2"><img class="roundedImage" src="${pokemonImgBase}" alt="${pokemonBaseName}"></button>
+                <button class="item-grid-2-col-1-2"><img class="roundedImage" id="${pokemonBaseName}" src="${pokemonImgBase}" alt="${pokemonBaseName}"></button>
             </div>
             <h3>Stats</h3>
             <div class="chart">
@@ -642,7 +619,7 @@ async function displaySearchedPokemon(pokemon) {
         const imageSecond = document.createElement("button")
         const pokemonImgSecond = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon[0].first_evolution.id}.png`
         imageSecond.className = "item-grid-2-col-2-3"
-        imageSecond.innerHTML = `<img class="roundedImage" src="${pokemonImgSecond}" alt="${pokemonFirstEvoName}">`
+        imageSecond.innerHTML = `<img class="roundedImage" id="${pokemonFirstEvoName}" src="${pokemonImgSecond}" alt="${pokemonFirstEvoName}">`
         roundedImageElement.appendChild(imageSecond)
 
         if (pokemon[0].hasOwnProperty("second_evolution")) {
@@ -651,7 +628,7 @@ async function displaySearchedPokemon(pokemon) {
             const pokemonImgThird = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon[0].second_evolution.id}.png`
 
             imageThird.className = "item-grid-2-col-3-4"
-            imageThird.innerHTML = `<img class="roundedImage" src="${pokemonImgThird}" alt="${pokemonSecondEvoName}">`
+            imageThird.innerHTML = `<img class="roundedImage" id="${pokemonSecondEvoName}" src="${pokemonImgThird}" alt="${pokemonSecondEvoName}">`
             roundedImageElement.appendChild(imageThird)
 
         }
@@ -659,35 +636,3 @@ async function displaySearchedPokemon(pokemon) {
 
     buttonEvoImages()
 }
-
-
-//Utility functions
-
-function getPokemonIDFromURL(url) {
-    return url.split("/")[6]
-}
-
-function replaceEmDashSymbols(text) {
-    return text.replace(/\u2013|\u2014/g, "-");
-}
-
-function convertStatsToPercentage(stats) {
-    stats.forEach((statLabel) => {
-        let statNameArray = statLabel.stat.name.split('-')
-
-        if (statNameArray[1]) {
-            const newString = capitalizedStr(statNameArray[1])
-            statNameArray[1] = newString
-            statNameArray = statNameArray.join("")
-        }
-
-        statsObject[statNameArray] = { top: 0, bottom: 0 }
-        statsObject[statNameArray].top = Math.round((255 - statLabel.base_stat) / 255 * 100)
-        statsObject[statNameArray].bottom = Math.round(statLabel.base_stat / 255 * 100)
-    })
-}
-
-//store pokemon put code into different functions
-//event listener functions separate it
-//Tidy up css
-
