@@ -8,7 +8,7 @@ body{
 #pokemonListSection {
     height: 100vh;
     background-color: #E3E8F2;
-    background-image: url("./img/bg.jpg");
+    background-image: url("./img/bg_v1.jpg");
     /* opacity: 0.5; */
 }
 
@@ -17,11 +17,12 @@ body{
     gap: 50px;
     flex-wrap: wrap;
     justify-content: center;
+    margin: 25px 0;
 }
 
 #pokemonListButtons {
     display: flex;
-    padding: 35px;
+    margin: 25px 0;
     gap: 25px;
     flex-wrap: wrap;
     justify-content: center;
@@ -40,10 +41,15 @@ li {
     max-height: 150px;
 }
 
-h1 {
-    font-size: 5em;
+h2 {
+    font-size: 3em;
     text-align: center;
-    margin: 0;
+    margin-top: 50px;
+    margin-bottom: 15px;
+    padding: 0;
+}
+h3 {
+    font-size: 2em;
     padding: 0;
 }
 
@@ -305,7 +311,7 @@ transform: rotateY(180deg);
 
 #searchForPokemon{
     height: 100vh;
-    background-color: #aac9a1;
+    /* background-color: #aac9a1; */
     /* background-image: url("bg.jpg"); */
     display: flex;
     flex-direction: column;
@@ -320,6 +326,8 @@ transform: rotateY(180deg);
     border-style: none;
     height: 3em;
     padding-left: 3em;
+    background-color: #ebebeb;
+    display: flex;
 }
 
 .labelStyle{
@@ -349,7 +357,7 @@ transform: rotateY(180deg);
 }
 
 #wrapperSearchedPokemon {
-    background-color: white;
+    /* background-color: rgb(225, 244, 229); */
     margin:15px 50px;
     padding: 20px;
     display: flex;
@@ -363,7 +371,8 @@ transform: rotateY(180deg);
     flex-wrap: wrap;
 }
 #recomendationList li {
-    background-color: #d2e1ff;
+    color: rgb(6, 52, 10);
+    background-color: rgb(210, 220, 233);
     margin:5px;
     padding:5px 15px;
     border-radius: 50px;
@@ -374,12 +383,13 @@ transform: rotateY(180deg);
 }
 
 .pokemonColumns {
+    background-color: #f0f0f0;
     width:33%;
     flex-grow: 1;
 }
 
 .greenColor {
-    background-color: #59ff64;
+    /* background-color: #59ff64; */
 }
 
 .searchedPokemonImg {
@@ -389,4 +399,14 @@ transform: rotateY(180deg);
 .roundedImage {
     border-radius: 50%;
     width:100px;
+}
+
+#pokemonLogo {
+    width: 250px;
+    margin:20px;
+}
+
+header {
+    background-color: white;
+    text-align: center;
 }

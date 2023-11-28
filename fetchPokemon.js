@@ -12,6 +12,13 @@ async function getPokemons() {
     await storePokemon(pokemonsEvolutionArray)
 
     displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
+    if (pokemonsEvoArray[curIndex].hasOwnProperty("second")) {
+        displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
+        if (pokemonsEvoArray[curIndex].hasOwnProperty("third")) {
+            displayPokemon(pokemonsEvoArray[curIndex].third[speciesID], pokemonsEvoArray[curIndex].third[pokemonDetails])
+        }
+    }
+    displaySearchedPokemon(pokemon)
 }
 
 getPokemons();
@@ -342,12 +349,10 @@ function displayBack(speciesInfo, pokemonInfo, flipBoxBack) {
 let nextIndex = 0;
 
 function interactiveButtons() {
-    document.addEventListener('keyup', event => {
+    document.addEventListener('keydown', event => {
         if (event.code === 'KeyF') {
-            console.log('Space pressed')
             const cards = document.querySelectorAll('.flip-box-inner')
             cards.forEach(card => {
-                console.log(card)
                 card.classList.toggle("is-flipped")
             });
         }
@@ -556,6 +561,7 @@ async function displaySearchedPokemon(pokemon) {
     })
 
     const pokemonBaseName = pokemon[0].base_evolution.name   
+    const pokemonHeight = pokemon[1].height * 10
 
     // Height needs to convert from meter to cm?
     searchedPokemonContainer.innerHTML =
@@ -567,19 +573,19 @@ async function displaySearchedPokemon(pokemon) {
 
         <div class="pokemonColumns">
             <div class="container-grid-2">
-                <h2 class="item-grid-2-col-1-5">Bio</h2>
+                <h3 class="item-grid-2-col-1-5">Bio</h3>
                 <p class="item-grid-2-col-1-5">${pokemon[0].bio}</p>
             
                 <div class="item-grid-2-col-1-2">Genus:</div>
                 <div class="item-grid-2-col-2-4">${pokemon[0].genus}</div>
                 <div class="item-grid-2-col-1-2">Height:</div>
-                <div class="item-grid-2-col-2-4">${pokemon[1].height}</div>
+                <div class="item-grid-2-col-2-4">${pokemonHeight}cm</div>
                 <div class="item-grid-2-col-1-2">Weight:</div>
                 <div class="item-grid-2-col-2-4">${pokemon[1].weight}kg</div>
                 <div class="item-grid-2-col-1-2">Abilities:</div>
                 <div class="item-grid-2-col-2-4">${abilityHTML}</div>
                 
-                <h2 class="item-grid-2-col-1-5">Training</h2>
+                <h3 class="item-grid-2-col-1-5">Training</h3>
                 <div class="item-grid-2-col-1-2">Base Exp:</div>
                 <div class="item-grid-2-col-2-4">${pokemon[1].base_experience}</div>
                 <div class="item-grid-2-col-1-2">Base Happiness:</div>
@@ -591,11 +597,11 @@ async function displaySearchedPokemon(pokemon) {
             </div>
         </div>
         <div class="pokemonColumns">
-            <h2>Evolution</h2>
+            <h3>Evolution</h3>
             <div class="container-grid-2" id="evolutionRoundImage">
                 <button class="item-grid-2-col-1-2"><img class="roundedImage" src="${pokemonImgBase}" alt="${pokemonBaseName}"></button>
             </div>
-            <h2>Stats</h2>
+            <h3>Stats</h3>
             <div class="chart">
                 <div class="bar" style="--bar-ratio: 100%;">
                     <div class="section" style="--section-value: ${statsObject.hp.top};" data-value="20"></div>
@@ -680,4 +686,8 @@ function convertStatsToPercentage(stats) {
         statsObject[statNameArray].bottom = Math.round(statLabel.base_stat / 255 * 100)
     })
 }
+
+//store pokemon put code into different functions
+//event listener functions separate it
+//Tidy up css
 

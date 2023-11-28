@@ -19,9 +19,8 @@
     <section id="pokemonListSection">
         <header>
             <hgroup>
-                <h1>Pokemon</h1>
+                <img id="pokemonLogo" src="./img/lookUpLogo.png" alt="Pokemon Logo">
             </hgroup>
-
         </header>
 
 
@@ -38,25 +37,24 @@
     <section id="searchForPokemon">
         <header>
             <hgroup>
-                <h1>Pokemon Search</h1>
+                <h2>POKEMON SEARCH</h2>
+                <form id="formSearchPokemon" action="">
+                    <div class="inputgroup">
+                        <span class="innericon searchicon"><img class="searchIcon" src="img/searchIcon.png"
+                                alt="Search Icon"></span>
+                        <input type="text" id="searchPokemonName" name="searchPokemonName" placeholder="Search a pokemon">
+                    </div>
+                </form>
             </hgroup>
         </header>
 
-        <form id="formSearchPokemon" action="">
-            <div class="inputgroup">
-                <span class="innericon searchicon"><img class="searchIcon" src="img/searchIcon.png"
-                        alt="Search Icon"></span>
-                <input type="text" id="searchPokemonName" name="searchPokemonName"  placeholder="Search a pokemon">
-            </div>
-        </form>
+
 
         <div id="wrapperSearchedPokemon">
             <ul id="recomendationList"></ul>
             <div id="searchedPokemonContainer"></div>
         </div>
     </section>
-
-    <footer>Footer</footer>
 </body>
 
 </html>
