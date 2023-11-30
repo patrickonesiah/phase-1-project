@@ -1,4 +1,4 @@
-const pokemonLimit = 3;
+const pokemonLimit = 9;
 const speciesID = 0
 const pokemonDetails = 1
 
