@@ -446,6 +446,7 @@ button {
     /* background-color: #f0f0f0; */
     width: 33%;
     flex-grow: 1;
+    border-radius: 5px;
 }
 
 .searchedPokemonImg {
