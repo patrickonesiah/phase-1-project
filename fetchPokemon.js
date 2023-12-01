@@ -1,4 +1,4 @@
-const pokemonLimit = 9;
+const pokemonLimit = 50;
 const speciesID = 0
 const pokemonDetails = 1
 
@@ -57,6 +57,8 @@ async function storePokemon(pokemonsEvolutionArray) {
         const pokemonResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonEvolution.chain.species.name}`)
         const pokemon = await pokemonResp.json()
 
+        pokemon.colorName = pokemonFirstSpecies.color.name
+
         objectTemp["first"].push(pokemonFirstSpeciesObject)
         objectTemp["first"].push(pokemon)
 
@@ -98,6 +100,8 @@ async function storePokemon(pokemonsEvolutionArray) {
 
             const pokemonSecondResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonSecondName}`)
             const pokemonSecond = await pokemonSecondResp.json()
+
+            pokemonSecond.colorName = pokemonSecondSpecies.color.name
 
             objectTemp["second"].push(pokemonSecondSpeciesObject)
             objectTemp["second"].push(pokemonSecond)
@@ -152,6 +156,8 @@ async function storePokemon(pokemonsEvolutionArray) {
 
                 const pokemonThirdResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonThirdName}`)
                 const pokemonThird = await pokemonThirdResp.json()
+
+                pokemonThird.colorName = pokemonThirdSpecies.color.name
 
                 objectTemp["third"].push(pokemonThirdSpeciesObject)
                 objectTemp["third"].push(pokemonThird)
@@ -526,7 +532,7 @@ interactiveButtons()
 
 //Display additional information under Pokemon Search
 function displaySearchedPokemon(pokemon) {
-    console.log(pokemon)
+
     const wrapperSearchedPokemon = document.querySelector("#wrapperSearchedPokemon")
     const searchedPokemonContainer = document.querySelector("#searchedPokemonContainer")
     searchedPokemonContainer.innerHTML = ""
@@ -560,18 +566,19 @@ function displaySearchedPokemon(pokemon) {
         statsObject[statNameArray].bottom = Math.round(statLabel.base_stat / 255 * 100)
     })
 
-    const pokemonBaseName = capitalizedStr(pokemon[1].name)
+    const pokemonBaseName = capitalizedStr(pokemon[0].base_evolution.name)
+    const pokemonName = capitalizedStr(pokemon[1].name)
     const pokemonHeight = pokemon[1].height * 10
     const pokemonId = pokemon[1].id.toString().padStart(4, '0')
-
+    console.log(pokemon)
     searchedPokemonContainer.innerHTML =
-        `<div class="pokemonColumns ${pokemon[0].base_evolution.colorName}">
+        `<div class="pokemonColumns ${pokemon[1].colorName}">
             <div class="container-grid-2">
                 <div class="item-grid-2-col-1-5 center searchedPokemonFontSize searchedPokemonMargin">#${pokemonId}</div>
                 <div class="item-grid-2-col-1-5 center">
                     <img class="searchedPokemonImg" src="${pokemonImgSrc}" alt="${pokemon[1].name}">
                 </div>
-                <div class="item-grid-2-col-1-5 center searchedPokemonFontSize">${pokemonBaseName}</div>
+                <div class="item-grid-2-col-1-5 center searchedPokemonFontSize">${pokemonName}</div>
             </div>
         </div>
 
