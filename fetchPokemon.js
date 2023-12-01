@@ -10,7 +10,7 @@ async function getPokemons() {
     const pokemonsEvolutionArray = await pokemonsEvolutionResponse.json()
 
     await storePokemon(pokemonsEvolutionArray)
-    console.log(pokemonsEvoArray)
+
     displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
     if (pokemonsEvoArray[curIndex].hasOwnProperty("second")) {
         displayPokemon(pokemonsEvoArray[curIndex].second[speciesID], pokemonsEvoArray[curIndex].second[pokemonDetails])
@@ -53,7 +53,7 @@ async function storePokemon(pokemonsEvolutionArray) {
             name: pokemonFirstSpecies.name,
             colorName: pokemonFirstSpecies.color.name
         }
-        console.log(pokemonFirstSpecies.color.name)
+
         const pokemonResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonEvolution.chain.species.name}`)
         const pokemon = await pokemonResp.json()
 
@@ -382,7 +382,7 @@ function interactiveButtons() {
 
     prevButtonShowOnlyOne.addEventListener('click', () => {
         const numberOfCards = document.querySelectorAll("#pokemonList >  li")
-        console.log("curIndex: ", curIndex)
+
         if (pokemonsEvoArray[curIndex - 1]) {
             if (numberOfCards.length === 1) {
                 curIndex--
@@ -502,12 +502,10 @@ function interactiveButtons() {
 function buttonEvoImages() {
 
     const roundedImage = document.querySelectorAll('.roundedImage')
-    console.log("Clicked", roundedImage)
     roundedImage.forEach(pokemonImage => {
         pokemonImage.addEventListener('click', (event) => {
 
             let pokemonFound;
-            console.log(event.target)
             pokemonsEvoArray.find(pokemonEvo => {
                 for (const pokemon in pokemonEvo) {
                     if (pokemonEvo[pokemon][1].name === event.target.id.toLowerCase()) {
@@ -528,7 +526,7 @@ interactiveButtons()
 
 //Display additional information under Pokemon Search
 function displaySearchedPokemon(pokemon) {
-
+    console.log(pokemon)
     const wrapperSearchedPokemon = document.querySelector("#wrapperSearchedPokemon")
     const searchedPokemonContainer = document.querySelector("#searchedPokemonContainer")
     searchedPokemonContainer.innerHTML = ""
@@ -562,7 +560,7 @@ function displaySearchedPokemon(pokemon) {
         statsObject[statNameArray].bottom = Math.round(statLabel.base_stat / 255 * 100)
     })
 
-    const pokemonBaseName = capitalizedStr(pokemon[0].base_evolution.name)
+    const pokemonBaseName = capitalizedStr(pokemon[1].name)
     const pokemonHeight = pokemon[1].height * 10
     const pokemonId = pokemon[1].id.toString().padStart(4, '0')
 
@@ -648,15 +646,9 @@ function displaySearchedPokemon(pokemon) {
         </div>`
 
     wrapperSearchedPokemon.appendChild(searchedPokemonContainer);
-//     <div class="item-grid-2-col-1-2 center">
-//     <button>
-//     <img class="roundedImage ${pokemon[0].base_evolution.colorName}" id="${pokemonBaseName}" src="${pokemonImgBase}" alt="${pokemonBaseName}">
-//     </button>
-//     <span>${pokemonBaseName}</span>
-// </div>
 
     const roundedImageElement = document.querySelector(`#evolutionRoundImage`)
-    console.log(roundedImageElement)
+
     if (pokemon[0].hasOwnProperty("first_evolution")) {
         const pokemonFirstEvoName = capitalizedStr(pokemon[0].first_evolution.name)
         const imageSecond = document.createElement("div")
