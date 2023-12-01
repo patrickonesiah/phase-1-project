@@ -122,6 +122,7 @@ async function storePokemon(pokemonsEvolutionArray) {
 
                 pokemonThirdSpeciesObject.base_happiness = pokemonThirdSpecies.base_happiness
                 pokemonThirdSpeciesObject.capture_rate = pokemonThirdSpecies.capture_rate
+                pokemonThirdSpeciesObject.growth_rate = pokemonThirdSpecies.growth_rate.name
 
                 pokemonFirstSpeciesObject.second_evolution =
                 {
