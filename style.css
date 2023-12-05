@@ -6,7 +6,8 @@ body {
 }
 
 #pokemonListSection {
-    height: 98vh;
+    /* height: 98vh; */
+    padding-bottom: 20px;
     background-image: url("./img/bg_v1.jpg");
 }
 
