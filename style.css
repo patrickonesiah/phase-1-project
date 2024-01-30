@@ -488,3 +488,7 @@ header {
     background-color: white;
     text-align: center;
 }
+
+.hide {
+    display:none;
+}

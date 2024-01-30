@@ -1,6 +1,6 @@
-const pokemonLimit = 8;
-const speciesID = 0
-const pokemonDetails = 1
+const pokemonLimit = 1;
+const speciesID = 0;
+const pokemonDetails = 1;
 
 const pokemonsEvolutionUrl = `https://pokeapi.co/api/v2/evolution-chain/?limit=${pokemonLimit}&offset=0`
 
@@ -9,7 +9,7 @@ async function getPokemons() {
     const pokemonsEvolutionResponse = await fetch(pokemonsEvolutionUrl)
     const pokemonsEvolutionArray = await pokemonsEvolutionResponse.json()
 
-    await storePokemon(pokemonsEvolutionArray)
+    await storePokemon(pokemonsEvolutionArray.results)
 
     displayPokemon(pokemonsEvoArray[curIndex].first[speciesID], pokemonsEvoArray[curIndex].first[pokemonDetails])
     if (pokemonsEvoArray[curIndex].hasOwnProperty("second")) {
@@ -25,147 +25,217 @@ getPokemons();
 //Store the Pokemons
 const pokemonsEvoArray = []
 
-async function storePokemon(pokemonsEvolutionArray) {
-    for (let i = 0; i < pokemonLimit; i++) {
-        const pokemonsEvolutionResp = await fetch(pokemonsEvolutionArray.results[i].url)
-        const pokemonEvolution = await pokemonsEvolutionResp.json()
 
-        const objectTemp = {}
-        objectTemp["first"] = []
+function addNextPokemon() {
 
-        const pokemonFirstSpeciesObject = {}
+    //Can I make it in a way where it runs one single function 3 times but checks 
+    //if there is another pokemon in in the pokemon evolution?
+    const objectTemp = {}
+    objectTemp["first"] = []
+}
 
-        const pokemonFirstSpeciesResp = await fetch(pokemonEvolution.chain.species.url)
+
+async function pokemonLevelCounter(obj) {
+    sumTotal = 1;
+
+    for (let element in obj) {
+        console.log(element)
+        // console.log(element, obj[element])
+        if (element === "evolves_to" && obj[element].length != 0) {
+            
+        //     const objectTemp = {}
+        //     objectTemp[sumTotal] = []
+            
+        //     const pokemonFirstSpeciesObject = {}
+            
+        const pokemonFirstSpeciesResp = await fetch(obj[element])
         const pokemonFirstSpecies = await pokemonFirstSpeciesResp.json()
-
-        const bioFirstInfo = pokemonFirstSpecies.flavor_text_entries.find(element => element.language.name === "en")
-        pokemonFirstSpeciesObject.bio = bioFirstInfo.flavor_text
-
-        const genusFirstInfo = pokemonFirstSpecies.genera.find(element => element.language.name === "en")
-        pokemonFirstSpeciesObject.genus = genusFirstInfo.genus
-
-        pokemonFirstSpeciesObject.base_happiness = pokemonFirstSpecies.base_happiness
-        pokemonFirstSpeciesObject.capture_rate = pokemonFirstSpecies.capture_rate
-        pokemonFirstSpeciesObject.growth_rate = pokemonFirstSpecies.growth_rate.name
-
-        pokemonFirstSpeciesObject.base_evolution = {
-            id: getPokemonIDFromURL(pokemonEvolution.chain.species.url),
-            name: pokemonFirstSpecies.name,
-            colorName: pokemonFirstSpecies.color.name
+            
+        //     sumTotal += pokemonLevelCounter(obj[element][0]);
         }
-
-        const pokemonResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonEvolution.chain.species.name}`)
-        const pokemon = await pokemonResp.json()
-
-        pokemon.colorName = pokemonFirstSpecies.color.name
-
-        objectTemp["first"].push(pokemonFirstSpeciesObject)
-        objectTemp["first"].push(pokemon)
-
-        if (pokemonEvolution.chain["evolves_to"][0]) {
-            const pokemonSecondName = pokemonEvolution.chain["evolves_to"][0].species.name
-            objectTemp["second"] = []
-
-            const pokemonSecondSpeciesObject = {}
-
-            const pokemonSecondSpeciesResp = await fetch(pokemonEvolution.chain["evolves_to"][0].species.url)
-            const pokemonSecondSpecies = await pokemonSecondSpeciesResp.json()
-
-            const bioSecondInfo = pokemonSecondSpecies.flavor_text_entries.find(element => element.language.name === "en")
-            pokemonSecondSpeciesObject.bio = bioSecondInfo.flavor_text
-
-            const genusSecondInfo = pokemonSecondSpecies.genera.find(element => element.language.name === "en")
-            pokemonSecondSpeciesObject.genus = genusSecondInfo.genus
-
-
-            pokemonSecondSpeciesObject.base_happiness = pokemonSecondSpecies.base_happiness
-            pokemonSecondSpeciesObject.capture_rate = pokemonSecondSpecies.capture_rate
-            pokemonSecondSpeciesObject.growth_rate = pokemonSecondSpecies.growth_rate.name
-
-            pokemonSecondSpeciesObject.base_evolution = {
-                id: getPokemonIDFromURL(pokemonEvolution.chain.species.url),
-                name: pokemonFirstSpecies.name,
-                colorName: pokemonFirstSpecies.color.name
-            }
-            pokemonSecondSpeciesObject.first_evolution = {
-                id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].species.url),
-                name: pokemonSecondSpecies.name,
-                colorName: pokemonSecondSpecies.color.name
-            }
-            pokemonFirstSpeciesObject.first_evolution = {
-                id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].species.url),
-                name: pokemonSecondSpecies.name,
-                colorName: pokemonSecondSpecies.color.name
-            }
-
-            const pokemonSecondResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonSecondName}`)
-            const pokemonSecond = await pokemonSecondResp.json()
-
-            pokemonSecond.colorName = pokemonSecondSpecies.color.name
-
-            objectTemp["second"].push(pokemonSecondSpeciesObject)
-            objectTemp["second"].push(pokemonSecond)
-            if (pokemonEvolution.chain["evolves_to"][0].evolves_to[0]) {
-                const pokemonThirdName = pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.name
-                objectTemp["third"] = []
-
-                const pokemonThirdSpeciesObject = {}
-
-                const pokemonThirdSpeciesResp = await fetch(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url)
-                const pokemonThirdSpecies = await pokemonThirdSpeciesResp.json()
-
-                const bioInfo = pokemonThirdSpecies.flavor_text_entries.find(element => element.language.name === "en")
-                pokemonThirdSpeciesObject.bio = bioInfo.flavor_text
-
-                const genusInfo = pokemonThirdSpecies.genera.find(element => element.language.name === "en")
-                pokemonThirdSpeciesObject.genus = genusInfo.genus
-
-                pokemonThirdSpeciesObject.base_happiness = pokemonThirdSpecies.base_happiness
-                pokemonThirdSpeciesObject.capture_rate = pokemonThirdSpecies.capture_rate
-                pokemonThirdSpeciesObject.growth_rate = pokemonThirdSpecies.growth_rate.name
-
-                pokemonFirstSpeciesObject.second_evolution =
-                {
-                    id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url),
-                    name: pokemonThirdSpecies.name,
-                    colorName: pokemonThirdSpecies.color.name
-                }
-                pokemonSecondSpeciesObject.second_evolution =
-                {
-                    id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url),
-                    name: pokemonThirdSpecies.name,
-                    colorName: pokemonThirdSpecies.color.name
-                }
-                pokemonThirdSpeciesObject.base_evolution =
-                {
-                    id: getPokemonIDFromURL(pokemonEvolution.chain.species.url),
-                    name: pokemonFirstSpecies.name,
-                    colorName: pokemonFirstSpecies.color.name
-                }
-                pokemonThirdSpeciesObject.first_evolution =
-                {
-                    id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].species.url),
-                    name: pokemonSecondSpecies.name,
-                    colorName: pokemonSecondSpecies.color.name
-                }
-                pokemonThirdSpeciesObject.second_evolution =
-                {
-                    id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url),
-                    name: pokemonThirdSpecies.name,
-                    colorName: pokemonThirdSpecies.color.name
-                }
-
-                const pokemonThirdResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonThirdName}`)
-                const pokemonThird = await pokemonThirdResp.json()
-
-                pokemonThird.colorName = pokemonThirdSpecies.color.name
-
-                objectTemp["third"].push(pokemonThirdSpeciesObject)
-                objectTemp["third"].push(pokemonThird)
-            }
-        }
-        pokemonsEvoArray.push(objectTemp)
     }
+
+    return sumTotal;
+}
+
+async function storePokemon(pokemonsEvolutionArray) {
+
+    //How to make it dynamic?
+
+    pokemonsEvolutionArray.forEach(async (pokemonEvolution) => {
+
+        try {
+            const pokemonsEvolutionResp = await fetch(pokemonEvolution.url)
+            if (pokemonsEvolutionResp.ok) {
+                const pokemon = await pokemonsEvolutionResp.json()
+                let totalPokemonEvolutions = pokemonLevelCounter(pokemon.chain)
+                console.log(totalPokemonEvolutions)
+
+                // const pokemonFirstSpeciesResp = await fetch(pokemon.chain.species.url)
+                // const pokemonFirstSpecies = await pokemonFirstSpeciesResp.json()
+                // pokemonLevel = 1
+                // if (pokemon.chain.evolves_to.length > 0)
+                //     pokemonLevel = 2
+
+            } else {
+                console.error('Promise resolved but HTTP status failed');
+            }
+        } catch (error) {
+            console.error(`Failed to fetch: ${error.message}`);
+        }
+
+
+    })
+
+
+
+
+
+
+
+
+
+
+    // for (let i = 0; i < pokemonLimit; i++) {
+    //     const pokemonsEvolutionResp = await fetch(pokemonsEvolutionArray.results[i].url)
+    //     const pokemonEvolution = await pokemonsEvolutionResp.json()
+
+    //     const objectTemp = {}
+    //     objectTemp["first"] = []
+
+    //     const pokemonFirstSpeciesObject = {}
+
+    //     const pokemonFirstSpeciesResp = await fetch(pokemonEvolution.chain.species.url)
+    //     const pokemonFirstSpecies = await pokemonFirstSpeciesResp.json()
+
+    //     const bioFirstInfo = pokemonFirstSpecies.flavor_text_entries.find(element => element.language.name === "en")
+    //     pokemonFirstSpeciesObject.bio = bioFirstInfo.flavor_text
+
+    //     const genusFirstInfo = pokemonFirstSpecies.genera.find(element => element.language.name === "en")
+    //     pokemonFirstSpeciesObject.genus = genusFirstInfo.genus
+
+    //     pokemonFirstSpeciesObject.base_happiness = pokemonFirstSpecies.base_happiness
+    //     pokemonFirstSpeciesObject.capture_rate = pokemonFirstSpecies.capture_rate
+    //     pokemonFirstSpeciesObject.growth_rate = pokemonFirstSpecies.growth_rate.name
+
+    //     pokemonFirstSpeciesObject.base_evolution = {
+    //         id: getPokemonIDFromURL(pokemonEvolution.chain.species.url),
+    //         name: pokemonFirstSpecies.name,
+    //         colorName: pokemonFirstSpecies.color.name
+    //     }
+
+    //     const pokemonResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonEvolution.chain.species.name}`)
+    //     const pokemon = await pokemonResp.json()
+
+    //     pokemon.colorName = pokemonFirstSpecies.color.name
+
+    //     objectTemp["first"].push(pokemonFirstSpeciesObject)
+    //     objectTemp["first"].push(pokemon)
+
+    //     if (pokemonEvolution.chain["evolves_to"][0]) {
+    //         const pokemonSecondName = pokemonEvolution.chain["evolves_to"][0].species.name
+    //         objectTemp["second"] = []
+
+    //         const pokemonSecondSpeciesObject = {}
+
+    //         const pokemonSecondSpeciesResp = await fetch(pokemonEvolution.chain["evolves_to"][0].species.url)
+    //         const pokemonSecondSpecies = await pokemonSecondSpeciesResp.json()
+
+    //         const bioSecondInfo = pokemonSecondSpecies.flavor_text_entries.find(element => element.language.name === "en")
+    //         pokemonSecondSpeciesObject.bio = bioSecondInfo.flavor_text
+
+    //         const genusSecondInfo = pokemonSecondSpecies.genera.find(element => element.language.name === "en")
+    //         pokemonSecondSpeciesObject.genus = genusSecondInfo.genus
+
+
+    //         pokemonSecondSpeciesObject.base_happiness = pokemonSecondSpecies.base_happiness
+    //         pokemonSecondSpeciesObject.capture_rate = pokemonSecondSpecies.capture_rate
+    //         pokemonSecondSpeciesObject.growth_rate = pokemonSecondSpecies.growth_rate.name
+
+    //         pokemonSecondSpeciesObject.base_evolution = {
+    //             id: getPokemonIDFromURL(pokemonEvolution.chain.species.url),
+    //             name: pokemonFirstSpecies.name,
+    //             colorName: pokemonFirstSpecies.color.name
+    //         }
+    //         pokemonSecondSpeciesObject.first_evolution = {
+    //             id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].species.url),
+    //             name: pokemonSecondSpecies.name,
+    //             colorName: pokemonSecondSpecies.color.name
+    //         }
+    //         pokemonFirstSpeciesObject.first_evolution = {
+    //             id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].species.url),
+    //             name: pokemonSecondSpecies.name,
+    //             colorName: pokemonSecondSpecies.color.name
+    //         }
+
+    //         const pokemonSecondResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonSecondName}`)
+    //         const pokemonSecond = await pokemonSecondResp.json()
+
+    //         pokemonSecond.colorName = pokemonSecondSpecies.color.name
+
+    //         objectTemp["second"].push(pokemonSecondSpeciesObject)
+    //         objectTemp["second"].push(pokemonSecond)
+    //         if (pokemonEvolution.chain["evolves_to"][0].evolves_to[0]) {
+    //             const pokemonThirdName = pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.name
+    //             objectTemp["third"] = []
+
+    //             const pokemonThirdSpeciesObject = {}
+
+    //             const pokemonThirdSpeciesResp = await fetch(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url)
+    //             const pokemonThirdSpecies = await pokemonThirdSpeciesResp.json()
+
+    //             const bioInfo = pokemonThirdSpecies.flavor_text_entries.find(element => element.language.name === "en")
+    //             pokemonThirdSpeciesObject.bio = bioInfo.flavor_text
+
+    //             const genusInfo = pokemonThirdSpecies.genera.find(element => element.language.name === "en")
+    //             pokemonThirdSpeciesObject.genus = genusInfo.genus
+
+    //             pokemonThirdSpeciesObject.base_happiness = pokemonThirdSpecies.base_happiness
+    //             pokemonThirdSpeciesObject.capture_rate = pokemonThirdSpecies.capture_rate
+    //             pokemonThirdSpeciesObject.growth_rate = pokemonThirdSpecies.growth_rate.name
+
+    //             pokemonFirstSpeciesObject.second_evolution =
+    //             {
+    //                 id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url),
+    //                 name: pokemonThirdSpecies.name,
+    //                 colorName: pokemonThirdSpecies.color.name
+    //             }
+    //             pokemonSecondSpeciesObject.second_evolution =
+    //             {
+    //                 id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url),
+    //                 name: pokemonThirdSpecies.name,
+    //                 colorName: pokemonThirdSpecies.color.name
+    //             }
+    //             pokemonThirdSpeciesObject.base_evolution =
+    //             {
+    //                 id: getPokemonIDFromURL(pokemonEvolution.chain.species.url),
+    //                 name: pokemonFirstSpecies.name,
+    //                 colorName: pokemonFirstSpecies.color.name
+    //             }
+    //             pokemonThirdSpeciesObject.first_evolution =
+    //             {
+    //                 id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].species.url),
+    //                 name: pokemonSecondSpecies.name,
+    //                 colorName: pokemonSecondSpecies.color.name
+    //             }
+    //             pokemonThirdSpeciesObject.second_evolution =
+    //             {
+    //                 id: getPokemonIDFromURL(pokemonEvolution.chain["evolves_to"][0].evolves_to[0].species.url),
+    //                 name: pokemonThirdSpecies.name,
+    //                 colorName: pokemonThirdSpecies.color.name
+    //             }
+
+    //             const pokemonThirdResp = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonThirdName}`)
+    //             const pokemonThird = await pokemonThirdResp.json()
+
+    //             pokemonThird.colorName = pokemonThirdSpecies.color.name
+
+    //             objectTemp["third"].push(pokemonThirdSpeciesObject)
+    //             objectTemp["third"].push(pokemonThird)
+    //         }
+    //     }
+    //     pokemonsEvoArray.push(objectTemp)
+    // }
 }
 
 //Display pokemon
@@ -344,6 +414,7 @@ function displayBack(speciesInfo, pokemonInfo, flipBoxBack) {
 let nextIndex = 0;
 
 function interactiveButtons() {
+
     //Flip cards
     document.addEventListener('keydown', event => {
         if (event.code === 'KeyF') {
@@ -503,6 +574,19 @@ function interactiveButtons() {
         }
 
     })
+
+    const toggleButton = document.getElementById('toggleButton')
+
+    //A button to toggle browsing single or group pokemons
+    toggleButton.addEventListener('click', () => {
+        nextButtonShowOnlyOne.classList.toggle('hide')
+        prevButtonShowOnlyOne.classList.toggle('hide')
+        prevButton.classList.toggle('hide')
+        nextButton.classList.toggle('hide')
+
+        toggleButton.value === "Show single" ? (toggleButton.value = "Show group") : (toggleButton.value = "Show single")
+    })
+
 }
 
 //Add event listener to the Pokemon evolution images
@@ -666,12 +750,12 @@ function displaySearchedPokemon(pokemon) {
                                 <span>${pokemonFirstEvoName}</span>`
         roundedImageElement.append(imageSecond)
 
-        
+
         if (pokemon[0].hasOwnProperty("second_evolution")) {
             const pokemonSecondEvoName = capitalizedStr(pokemon[0].second_evolution.name)
             const imageThird = document.createElement("div")
             const pokemonImgThird = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon[0].second_evolution.id}.png`
-            
+
             imageThird.className = "item-grid-2-col-3-4 center"
             imageThird.innerHTML = `<button><img class="roundedImage ${pokemon[0].second_evolution.colorName}" id="${pokemonSecondEvoName}" src="${pokemonImgThird}" alt="${pokemonSecondEvoName}"></button>
                                     <span>${pokemonSecondEvoName}</span>`
